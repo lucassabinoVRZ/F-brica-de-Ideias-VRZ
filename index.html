@@ -7,44 +7,39 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #050505; color: #ffffff; overflow-x: hidden; margin: 0; }
-        .glass { background: rgba(15, 15, 15, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
-        .nav-link { position: relative; transition: all 0.3s ease; opacity: 0.6; }
+        body { font-family: 'Inter', sans-serif; background-color: #050505; color: #ffffff; overflow-x: hidden; margin: 0; padding-bottom: 80px; }
+        .glass { background: rgba(15, 15, 15, 0.9); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .nav-link { position: relative; transition: all 0.3s ease; opacity: 0.6; cursor: pointer; }
         .nav-link.active { color: #ffffff; opacity: 1; }
         .nav-link.active::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 100%; height: 2px; background: #dc2626; }
         .page-content { display: none; }
         .page-content.active { display: block; animation: fadeIn 0.6s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         .car-card { transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; border: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.01); }
-        .car-card:hover { transform: translateY(-12px); border-color: #dc2626; background: rgba(220, 38, 38, 0.03); box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+        .car-card:hover { transform: translateY(-10px); border-color: #dc2626; background: rgba(220, 38, 38, 0.03); }
         .loading-screen { position: fixed; inset: 0; background: #050505; display: flex; align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.5s ease; }
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
         
         .icon-box { background: linear-gradient(135deg, #dc2626 0%, #7f1d1d 100%); width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 12px; margin-bottom: 20px; }
         .tech-badge { background: rgba(220, 38, 38, 0.1); border: 1px solid rgba(220, 38, 38, 0.2); color: #dc2626; font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 4px; text-transform: uppercase; }
         
-        .input-group { position: relative; }
-        .input-group label { font-size: 9px; text-transform: uppercase; color: #666; font-weight: 900; letter-spacing: 0.1em; margin-bottom: 6px; display: block; }
         .input-field { width: 100%; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 14px; font-size: 13px; color: white; outline: none; transition: all 0.3s; }
-        .input-field:focus { border-color: #dc2626; background: rgba(255,255,255,0.05); box-shadow: 0 0 15px rgba(220, 38, 38, 0.1); }
-        .suggestion-card { border-left: 3px solid #dc2626; transition: all 0.3s; position: relative; }
-        .suggestion-card:hover { transform: translateX(5px); background: rgba(255,255,255,0.03); }
+        .suggestion-card { border-left: 3px solid #dc2626; transition: all 0.3s; }
         
-        .admin-controls { display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.05); gap: 10px; }
-        body.is-admin .admin-controls { display: flex; flex-direction: column; }
+        /* Ajustes Carrossel Mobile */
+        .carousel-container { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 10px; }
+        .carousel-item { flex: 0 0 85%; scroll-snap-align: start; }
+        @media (min-width: 768px) { .carousel-item { flex: 0 0 calc(25% - 10px); } }
 
-        .carousel-container { overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; -ms-overflow-style: none; scrollbar-width: none; }
-        .carousel-container::-webkit-scrollbar { display: none; }
-        .carousel-item { scroll-snap-align: start; flex: 0 0 100%; }
-        /* Ajustado para caber 4 itens em retrato no desktop ocupando toda a largura disponível */
-        @media (min-width: 768px) { .carousel-item { flex: 0 0 calc(25% - 0.75rem); } }
+        .ballistic-table { width: 100%; border-collapse: collapse; font-size: 10px; text-transform: uppercase; }
+        .ballistic-table th { background: rgba(220, 38, 38, 0.1); color: #dc2626; padding: 8px; text-align: left; }
+        .ballistic-table td { padding: 8px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); color: #888; }
 
-        .ballistic-table { width: 100%; border-collapse: collapse; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
-        .ballistic-table th { background: rgba(220, 38, 38, 0.1); color: #dc2626; padding: 12px; text-align: left; border-bottom: 2px solid #dc2626; }
-        .ballistic-table td { padding: 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); color: #aaa; }
-        .ballistic-table tr:hover td { color: #fff; background: rgba(255, 255, 255, 0.02); }
+        /* Menu Inferior Mobile */
+        .mobile-nav { position: fixed; bottom: 0; left: 0; right: 0; display: flex; justify-content: space-around; padding: 15px; background: rgba(10, 10, 10, 0.95); backdrop-filter: blur(10px); border-top: 1px solid rgba(255,255,255,0.05); z-index: 100; }
+        @media (min-width: 768px) { .mobile-nav { display: none; } }
     </style>
 </head>
 <body class="min-h-screen">
@@ -52,15 +47,15 @@
     <div id="loader" class="loading-screen">
         <div class="flex flex-col items-center gap-4">
             <div class="w-12 h-12 border-4 border-red-600 border-t-transparent rounded-full animate-spin"></div>
-            <span class="text-[10px] uppercase tracking-[0.4em] text-gray-500 font-bold">VRZ Portal Core</span>
+            <span class="text-[10px] uppercase tracking-[0.4em] text-gray-500 font-bold italic">VRZ Portal Core</span>
         </div>
     </div>
 
-    <!-- Navegação -->
+    <!-- Desktop Navigation -->
     <nav class="p-6 flex justify-between items-center glass sticky top-0 z-50">
         <div class="flex items-center gap-2 cursor-pointer" onclick="showPage('security')">
             <span class="font-black italic text-xl tracking-tighter text-white">VRZ</span>
-            <span class="text-[10px] uppercase tracking-[0.3em] font-light border-l border-white/20 pl-3">Blindados</span>
+            <span class="text-[10px] uppercase tracking-[0.3em] font-light border-l border-white/20 pl-3 hidden xs:block">Blindados</span>
         </div>
         <div class="hidden md:flex gap-8 text-[10px] font-bold uppercase tracking-widest text-gray-400">
             <button onclick="showPage('security')" id="nav-security" class="nav-link active">Segurança</button>
@@ -68,65 +63,79 @@
             <button onclick="showPage('suggestions')" id="nav-suggestions" class="nav-link">Sugestões</button>
             <button onclick="showPage('about')" id="nav-about" class="nav-link">Somos VRZ</button>
         </div>
-        <div id="userBadge" class="text-[9px] text-gray-600 font-mono hidden md:block">
-            STATUS: <span id="userIdDisplay" class="text-red-500 italic uppercase">Desconectado</span>
+        <div class="text-[9px] text-gray-600 font-mono">
+            STATUS: <span id="userIdDisplay" class="text-red-500 italic uppercase">A Conectar</span>
         </div>
     </nav>
 
+    <!-- Mobile Navigation -->
+    <div class="mobile-nav">
+        <button onclick="showPage('security')" class="flex flex-col items-center gap-1">
+            <div id="m-nav-security" class="w-2 h-2 rounded-full bg-red-600"></div>
+            <span class="text-[8px] font-black uppercase text-white tracking-widest">Segurança</span>
+        </button>
+        <button onclick="showPage('portfolio')" class="flex flex-col items-center gap-1">
+            <div id="m-nav-portfolio" class="w-2 h-2 rounded-full bg-transparent"></div>
+            <span class="text-[8px] font-black uppercase text-white tracking-widest">Portfólio</span>
+        </button>
+        <button onclick="showPage('suggestions')" class="flex flex-col items-center gap-1">
+            <div id="m-nav-suggestions" class="w-2 h-2 rounded-full bg-transparent"></div>
+            <span class="text-[8px] font-black uppercase text-white tracking-widest">Sugestões</span>
+        </button>
+        <button onclick="showPage('about')" class="flex flex-col items-center gap-1">
+            <div id="m-nav-about" class="w-2 h-2 rounded-full bg-transparent"></div>
+            <span class="text-[8px] font-black uppercase text-white tracking-widest">VRZ</span>
+        </button>
+    </div>
+
     <main class="max-w-6xl mx-auto p-4 md:p-8">
         <!-- PÁGINA: SEGURANÇA -->
-        <section id="page-security" class="page-content active space-y-16">
+        <section id="page-security" class="page-content active space-y-10 md:space-y-16">
             <div class="text-center space-y-4">
-                <h1 class="text-4xl md:text-6xl font-black italic uppercase leading-tight">Blindamos com princípios, entregamos com <span class="text-red-600">confiança</span></h1>
-                <p class="text-gray-500 max-w-2xl mx-auto text-sm italic">Compromisso absoluto com a proteção da vida e excelência técnica.</p>
+                <h1 class="text-3xl md:text-6xl font-black italic uppercase leading-tight">Blindamos com princípios, entregamos com <span class="text-red-600">confiança</span></h1>
+                <p class="text-gray-500 max-w-2xl mx-auto text-xs md:sm italic px-4">Proteção absoluta e excelência técnica para o que você mais valoriza.</p>
             </div>
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="glass p-8 rounded-3xl border-t border-red-600/30 flex flex-col h-full">
-                    <div class="icon-box"><svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-                    <h3 class="text-xl font-black uppercase italic mb-4 text-red-600">Missão</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed">Oferecer blindagem automotiva de excelência no Brasil, aliando tecnologia, segurança e preservação do design original.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="glass p-6 md:p-8 rounded-3xl border-t border-red-600/30">
+                    <div class="icon-box"><svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+                    <h3 class="text-lg font-black uppercase italic mb-3 text-red-600">Missão</h3>
+                    <p class="text-gray-400 text-xs md:text-sm leading-relaxed italic">Proteção civil de elite, integrando tecnologia balística avançada e design original em cada projeto.</p>
                 </div>
-                <div class="glass p-8 rounded-3xl border-t border-white/10 flex flex-col h-full">
-                    <div class="icon-box" style="background: #222;"><svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M22 12h-4M2 12h4M12 2v4M12 22v-4"/></svg></div>
-                    <h3 class="text-xl font-black uppercase italic mb-4 text-white">Visão</h3>
-                    <p class="text-gray-400 text-sm leading-relaxed italic">Ser reconhecida como a melhor empresa de blindagem automotiva premium do país.</p>
+                <div class="glass p-6 md:p-8 rounded-3xl border-t border-white/10">
+                    <div class="icon-box" style="background: #222;"><svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle stroke-width="2" cx="12" cy="12" r="10"/><path stroke-width="2" d="M22 12h-4M2 12h4M12 2v4M12 22v-4"/></svg></div>
+                    <h3 class="text-lg font-black uppercase italic mb-3 text-white">Visão</h3>
+                    <p class="text-gray-400 text-xs md:text-sm leading-relaxed italic">Ser a referência nacional absoluta em blindagem premium e inovação em materiais compósitos.</p>
                 </div>
-                <div class="glass p-8 rounded-3xl border-t border-white/10 flex flex-col h-full">
-                    <div class="icon-box" style="background: #222;"><svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0l-.77.78-.77-.78a5.4 5.4 0 0 0-7.65 7.65l.77.78L12 20.24l7.23-7.23.77-.78a5.4 5.4 0 0 0 0-7.65z"/></svg></div>
-                    <h3 class="text-xl font-black uppercase italic mb-4 text-white">Valores</h3>
-                    <div class="space-y-4 text-xs text-gray-400 leading-tight italic">
-                        <div><span class="text-red-500 font-black uppercase block mb-1">ÉTICA</span> Transparência e respeito.</div>
-                        <div><span class="text-red-500 font-black uppercase block mb-1">PESSOAS</span> Satisfação do time VRZ.</div>
-                        <div><span class="text-red-500 font-black uppercase block mb-1">INOVAÇÃO</span> Tecnologia constante.</div>
-                    </div>
+                <div class="glass p-6 md:p-8 rounded-3xl border-t border-white/10">
+                    <div class="icon-box" style="background: #222;"><svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0l-.77.78-.77-.78a5.4 5.4 0 0 0-7.65 7.65l.77.78L12 20.24l7.23-7.23.77-.78a5.4 5.4 0 0 0 0-7.65z"/></svg></div>
+                    <h3 class="text-lg font-black uppercase italic mb-3 text-white">Valores</h3>
+                    <p class="text-gray-400 text-xs md:text-sm italic leading-relaxed">Ética, Rigor Técnico, Inovação Constante e Foco na Segurança do Usuário.</p>
                 </div>
             </div>
 
-            <div class="glass p-10 rounded-[3rem] border border-white/5 bg-gradient-to-br from-white/[0.02] to-transparent space-y-12">
-                <div class="grid md:grid-cols-2 gap-12 items-center">
-                    <div class="space-y-6">
-                        <h2 class="text-3xl font-black italic uppercase">o que é blindagem <span class="text-red-600">Nível III-A?</span></h2>
-                        <div class="text-gray-400 text-sm italic leading-relaxed font-light space-y-4">
-                            <p>O **Nível III-A** é o padrão de excelência e a proteção mais robusta permitida para o uso civil no território brasileiro, regulamentada pela norma **NBR 15000**. Este nível de segurança é projetado para neutralizar disparos de armas de mão de alta energia, as ameaças mais críticas em cenários urbanos.</p>
-                            <p>Na **VRZ Blindados**, elevamos este protocolo técnico através do uso exclusivo da tecnologia **Udura®** — um composto de mantas de aramida de altíssima performance que substitui o aço em grande parte da estrutura. O resultado é uma proteção perimetral absoluta com o menor peso agregado do mercado, preservando o centro de gravidade, a eficiência de frenagem e a agilidade original do seu veículo.</p>
+            <div class="glass p-6 md:p-10 rounded-[2rem] border border-white/5 bg-gradient-to-br from-white/[0.02] to-transparent">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
+                    <div class="space-y-4 md:space-y-6">
+                        <h2 class="text-2xl md:text-3xl font-black italic uppercase">o que é blindagem <span class="text-red-600">Nível III-A?</span></h2>
+                        <div class="text-gray-400 text-xs md:text-sm italic leading-relaxed font-light space-y-4">
+                            <p>O **Nível III-A** é o protocolo de proteção máxima permitida para uso civil no Brasil sob a norma **NBR 15000**. Este nível é projetado para resistir a disparos de armas de alta energia, como a .44 Magnum e 9mm FMJ, as ameaças mais críticas do cenário urbano.</p>
+                            <p>Na VRZ, utilizamos o sistema **Udura®**, que substitui o aço pesado por mantas de aramida aeroespacial, reduzindo drasticamente o peso e preservando a agilidade do veículo.</p>
                         </div>
                     </div>
-                    <div class="space-y-6">
-                        <div class="bg-black/60 p-6 rounded-3xl border border-red-600/20">
-                            <h3 class="text-xs font-black uppercase text-red-600 tracking-widest mb-4">Tabela Balística de Resistência</h3>
-                            <div class="overflow-x-auto">
-                                <table class="ballistic-table">
-                                    <thead><tr><th>Arma / Calibre</th><th>Projétil</th><th>Velocidade</th></tr></thead>
-                                    <tbody>
-                                        <tr><td>.44 Magnum</td><td>Lead Semi-Wad</td><td>426 m/s</td></tr>
-                                        <tr><td>Submetralhadora 9mm</td><td>FMJ</td><td>426 m/s</td></tr>
-                                        <tr><td>Pistola .357 SIG</td><td>Flat Nose FMJ</td><td>448 m/s</td></tr>
-                                        <tr><td>Revólver .38 Special</td><td>Lead Round Nose</td><td>259 m/s</td></tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                    <div class="bg-black/60 p-4 md:p-6 rounded-3xl border border-red-600/20 overflow-hidden">
+                        <h3 class="text-[9px] font-black uppercase text-red-600 tracking-widest mb-4">Tabela Balística VRZ</h3>
+                        <div class="overflow-x-auto custom-scrollbar">
+                            <table class="ballistic-table">
+                                <thead><tr><th>Calibre</th><th>Projétil</th><th>Velocidade</th></tr></thead>
+                                <tbody>
+                                    <tr><td>.44 Magnum</td><td>Semi-Wad</td><td>426 m/s</td></tr>
+                                    <tr><td>9mm SMG</td><td>FMJ</td><td>426 m/s</td></tr>
+                                    <tr><td>.357 SIG</td><td>Flat Nose</td><td>448 m/s</td></tr>
+                                    <tr><td>.38 Special</td><td>Lead Round</td><td>259 m/s</td></tr>
+                                </tbody>
+                            </table>
                         </div>
-                        <p class="text-[9px] text-gray-600 font-bold uppercase italic text-right">* Proteção certificada contra todas as armas de mão convencionais e submetralhadoras 9mm.</p>
                     </div>
                 </div>
             </div>
@@ -134,71 +143,59 @@
 
         <!-- PÁGINA: PORTFÓLIO -->
         <section id="page-portfolio" class="page-content space-y-12">
-            <h1 class="text-5xl md:text-7xl font-black italic uppercase text-red-600 text-center">Portfólio VRZ</h1>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <div class="car-card p-8 rounded-[2.5rem] flex flex-col min-h-[300px]" onclick="analyzeModel('Jeep Commander')">
-                    <div class="flex-1 space-y-4"><span class="tech-badge">SUV Executivo</span><h3 class="text-3xl font-black uppercase italic">Jeep Commander</h3></div>
-                    <div class="pt-6 flex justify-between items-center text-[9px] font-bold text-blue-400 uppercase">Análise Técnica ✨ <span class="text-red-600 text-lg">→</span></div>
+            <h1 class="text-4xl md:text-7xl font-black italic uppercase text-red-600 text-center">Portfólio VRZ</h1>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="car-card p-6 md:p-8 rounded-[2rem] flex flex-col min-h-[250px]" onclick="analyzeModel('Jeep Commander')">
+                    <div class="flex-1 space-y-4"><span class="tech-badge">SUV Executivo</span><h3 class="text-2xl font-black uppercase italic">Jeep Commander</h3></div>
+                    <div class="pt-6 flex justify-between items-center text-[9px] font-bold text-blue-400">Relatório IA ✨ <span class="text-red-600">→</span></div>
                 </div>
-                <div class="car-card p-8 rounded-[2.5rem] flex flex-col min-h-[300px]" onclick="analyzeModel('BMW X5')">
-                    <div class="flex-1 space-y-4"><span class="tech-badge">Sport Luxury</span><h3 class="text-3xl font-black uppercase italic">BMW X5</h3></div>
-                    <div class="pt-6 flex justify-between items-center text-[9px] font-bold text-blue-400 uppercase">Análise Técnica ✨ <span class="text-red-600 text-lg">→</span></div>
+                <div class="car-card p-6 md:p-8 rounded-[2rem] flex flex-col min-h-[250px]" onclick="analyzeModel('BMW X5')">
+                    <div class="flex-1 space-y-4"><span class="tech-badge">Luxury Sport</span><h3 class="text-2xl font-black uppercase italic">BMW X5</h3></div>
+                    <div class="pt-6 flex justify-between items-center text-[9px] font-bold text-blue-400">Relatório IA ✨ <span class="text-red-600">→</span></div>
                 </div>
-                <div class="car-card p-8 rounded-[2.5rem] flex flex-col min-h-[300px]" onclick="analyzeModel('Toyota SW4')">
-                    <div class="flex-1 space-y-4"><span class="tech-badge">Off-Road</span><h3 class="text-3xl font-black uppercase italic">Toyota SW4</h3></div>
-                    <div class="pt-6 flex justify-between items-center text-[9px] font-bold text-blue-400 uppercase">Análise Técnica ✨ <span class="text-red-600 text-lg">→</span></div>
+                <div class="car-card p-6 md:p-8 rounded-[2rem] flex flex-col min-h-[250px]" onclick="analyzeModel('Toyota SW4')">
+                    <div class="flex-1 space-y-4"><span class="tech-badge">Off-Road</span><h3 class="text-2xl font-black uppercase italic">Toyota SW4</h3></div>
+                    <div class="pt-6 flex justify-between items-center text-[9px] font-bold text-blue-400">Relatório IA ✨ <span class="text-red-600">→</span></div>
                 </div>
-                <div class="car-card p-8 rounded-[2.5rem] flex flex-col min-h-[300px]" onclick="analyzeModel('Volvo XC90')">
-                    <div class="flex-1 space-y-4"><span class="tech-badge">Safety Legend</span><h3 class="text-3xl font-black uppercase italic">Volvo XC90</h3></div>
-                    <div class="pt-6 flex justify-between items-center text-[9px] font-bold text-blue-400 uppercase">Análise Técnica ✨ <span class="text-red-600 text-lg">→</span></div>
+                <div class="car-card p-6 md:p-8 rounded-[2rem] flex flex-col min-h-[250px]" onclick="analyzeModel('Volvo XC90')">
+                    <div class="flex-1 space-y-4"><span class="tech-badge">Safety Legend</span><h3 class="text-2xl font-black uppercase italic">Volvo XC90</h3></div>
+                    <div class="pt-6 flex justify-between items-center text-[9px] font-bold text-blue-400">Relatório IA ✨ <span class="text-red-600">→</span></div>
                 </div>
-                <div class="car-card p-8 rounded-[2.5rem] flex flex-col min-h-[300px]" onclick="analyzeModel('Ford F-150')">
-                    <div class="flex-1 space-y-4"><span class="tech-badge">Robust</span><h3 class="text-3xl font-black uppercase italic">Ford F-150</h3></div>
-                    <div class="pt-6 flex justify-between items-center text-[9px] font-bold text-blue-400 uppercase">Análise Técnica ✨ <span class="text-red-600 text-lg">→</span></div>
+                <div class="car-card p-6 md:p-8 rounded-[2rem] flex flex-col min-h-[250px]" onclick="analyzeModel('Porsche Macan')">
+                    <div class="flex-1 space-y-4"><span class="tech-badge">Sport SUV</span><h3 class="text-2xl font-black uppercase italic">Porsche Macan</h3></div>
+                    <div class="pt-6 flex justify-between items-center text-[9px] font-bold text-blue-400">Relatório IA ✨ <span class="text-red-600">→</span></div>
                 </div>
-                <div class="car-card p-8 rounded-[2.5rem] flex flex-col min-h-[300px]" onclick="analyzeModel('Porsche Macan')">
-                    <div class="flex-1 space-y-4"><span class="tech-badge">Sport Compact SUV</span><h3 class="text-3xl font-black uppercase italic">Porsche Macan</h3></div>
-                    <div class="pt-6 flex justify-between items-center text-[9px] font-bold text-blue-400 uppercase">Análise Técnica ✨ <span class="text-red-600 text-lg">→</span></div>
-                </div>
-                <div class="car-card p-8 rounded-[2.5rem] flex flex-col min-h-[300px]" onclick="analyzeModel('Pajero Sport')">
-                    <div class="flex-1 space-y-4"><span class="tech-badge">Adventure Shield</span><h3 class="text-3xl font-black uppercase italic">Pajero Sport</h3></div>
-                    <div class="pt-6 flex justify-between items-center text-[9px] font-bold text-blue-400 uppercase">Análise Técnica ✨ <span class="text-red-600 text-lg">→</span></div>
-                </div>
-                <div class="car-card p-8 rounded-[2.5rem] flex flex-col min-h-[300px]" onclick="analyzeModel('RAM 2500')">
-                    <div class="flex-1 space-y-4"><span class="tech-badge">Heavy Duty Shield</span><h3 class="text-3xl font-black uppercase italic">RAM 2500</h3></div>
-                    <div class="pt-6 flex justify-between items-center text-[9px] font-bold text-blue-400 uppercase">Análise Técnica ✨ <span class="text-red-600 text-lg">→</span></div>
-                </div>
-                <div class="car-card p-8 rounded-[2.5rem] flex flex-col min-h-[300px]" onclick="analyzeModel('Tiguan')">
-                    <div class="flex-1 space-y-4"><span class="tech-badge">Family Security</span><h3 class="text-3xl font-black uppercase italic">VW Tiguan</h3></div>
-                    <div class="pt-6 flex justify-between items-center text-[9px] font-bold text-blue-400 uppercase">Análise Técnica ✨ <span class="text-red-600 text-lg">→</span></div>
+                <div class="car-card p-6 md:p-8 rounded-[2rem] flex flex-col min-h-[250px]" onclick="analyzeModel('RAM 2500')">
+                    <div class="flex-1 space-y-4"><span class="tech-badge">Heavy Duty</span><h3 class="text-2xl font-black uppercase italic">RAM 2500</h3></div>
+                    <div class="pt-6 flex justify-between items-center text-[9px] font-bold text-blue-400">Relatório IA ✨ <span class="text-red-600">→</span></div>
                 </div>
             </div>
-            <div id="aiAnalysisResult" class="hidden glass p-10 rounded-[3rem] border border-blue-500/20 mt-12 shadow-2xl">
-                <div id="analysisContent" class="text-gray-400 text-sm leading-relaxed whitespace-pre-wrap italic font-light"></div>
-                <button onclick="this.parentElement.classList.add('hidden')" class="mt-8 text-[10px] font-black uppercase text-gray-600">Fechar</button>
+            <div id="aiAnalysisResult" class="hidden glass p-6 md:p-10 rounded-[2rem] border border-blue-500/20 mt-8">
+                <div id="analysisContent" class="text-gray-400 text-xs md:text-sm italic leading-relaxed whitespace-pre-wrap"></div>
+                <button onclick="this.parentElement.classList.add('hidden')" class="mt-6 text-[10px] font-black uppercase text-gray-500 hover:text-red-600">Fechar</button>
             </div>
         </section>
 
         <!-- PÁGINA: SUGESTÕES -->
-        <section id="page-suggestions" class="page-content space-y-12">
-            <div class="text-center"><h1 class="text-5xl font-black italic uppercase text-white">Canal de <span class="text-red-600">Inovação</span></h1></div>
-            <div class="grid md:grid-cols-5 gap-8">
-                <div class="md:col-span-2 glass p-8 rounded-[2rem] space-y-6">
-                    <h2 class="text-xl font-black uppercase italic border-b border-white/5 pb-4">Nova Proposta</h2>
-                    <form onsubmit="event.preventDefault(); submitFeedback();" class="space-y-5">
-                        <div class="input-group"><label>Identificação</label><input type="text" id="userName" required class="input-field" placeholder="Seu nome"></div>
-                        <div class="input-group"><label>Departamento</label><input type="text" id="userSector" required class="input-field" placeholder="Seu setor"></div>
-                        <div class="input-group"><label>Linha de Produção</label><input type="text" id="userProdLine" required class="input-field" placeholder="Sua linha"></div>
-                        <div class="input-group"><label>Descrição</label><textarea id="userText" required rows="5" class="input-field resize-none" placeholder="Sua ideia..."></textarea></div>
-                        <button id="submitBtn" class="w-full bg-red-600 py-4 rounded-xl font-black uppercase italic">Enviar</button>
+        <section id="page-suggestions" class="page-content space-y-10">
+            <h1 class="text-4xl font-black italic uppercase text-center">Canal de <span class="text-red-600">Inovação</span></h1>
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-8">
+                <div class="md:col-span-2 glass p-6 rounded-[2rem] space-y-4">
+                    <h2 class="text-lg font-black uppercase italic border-b border-white/5 pb-2">Nova Proposta</h2>
+                    <form onsubmit="event.preventDefault(); submitFeedback();" class="space-y-4">
+                        <input type="text" id="userName" required class="input-field" placeholder="Nome">
+                        <input type="text" id="userSector" required class="input-field" placeholder="Setor">
+                        <input type="text" id="userProdLine" required class="input-field" placeholder="Linha de Produção">
+                        <textarea id="userText" required rows="4" class="input-field resize-none" placeholder="Sua ideia..."></textarea>
+                        <button id="submitBtn" class="w-full bg-red-600 py-4 rounded-xl font-black uppercase italic tracking-tighter">Enviar Proposta</button>
                     </form>
                 </div>
-                <div class="md:col-span-3 space-y-6">
+                <div class="md:col-span-3 space-y-4">
                     <div class="flex items-center justify-between px-2">
-                        <h2 class="text-lg font-bold uppercase italic text-gray-400">Sugestões de Inovações</h2>
-                        <button onclick="loginAdmin()" class="text-gray-700 hover:text-red-600">Admin</button>
+                        <h2 class="text-sm font-bold uppercase italic text-gray-500">Sugestões de Melhorias</h2>
+                        <button onclick="loginAdmin()" class="text-[8px] uppercase font-black text-gray-800">Admin</button>
                     </div>
-                    <div id="suggestionsList" class="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar italic text-xs text-gray-600">Sincronizando...</div>
+                    <div id="suggestionsList" class="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar italic text-xs text-gray-600">Sincronizando banco de dados...</div>
                 </div>
             </div>
         </section>
@@ -206,76 +203,65 @@
         <!-- PÁGINA: SOMOS VRZ -->
         <section id="page-about" class="page-content space-y-12">
             <div class="text-center space-y-4">
-                <h1 class="text-5xl md:text-7xl font-black italic uppercase leading-none">Somos <span class="text-red-600">VRZ</span></h1>
-                <p class="text-gray-500 text-xs italic uppercase tracking-[0.3em]">SBC - SÃO PAULO</p>
+                <h1 class="text-4xl md:text-7xl font-black italic uppercase leading-none">Somos <span class="text-red-600">VRZ</span></h1>
+                <p class="text-gray-500 text-[10px] italic uppercase tracking-[0.3em]">Engenharia Balística • São Bernardo do Campo</p>
             </div>
 
-            <div class="grid md:grid-cols-2 gap-12 items-start">
-                <div class="space-y-8">
-                    <div class="glass p-8 rounded-[2.5rem] border border-white/5 space-y-6">
-                        <h2 class="text-2xl font-black uppercase italic text-red-600">Nossa História</h2>
-                        <div class="text-gray-400 text-sm leading-relaxed italic font-light space-y-4">
-                            <p>Fundada sob os pilares da precisão técnica e segurança absoluta, a VRZ Blindados consolidou-se como autoridade máxima em engenharia balística no Brasil. Nossa trajetória é pautada pelo compromisso inabalável de unir proteção de alto impacto à integridade dinâmica de cada veículo.</p>
-                            <p>Com operação numa planta fabril moderna em São Bernardo do Campo, integramos tecnologias aeroespaciais e a exclusiva manta Udura® para redefinir o conceito de blindagem premium. Não apenas reforçamos veículos; blindamos a tranquilidade de famílias e executivos, garantindo que a sofisticação e o prazer de conduzir permaneçam inalterados.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+                <div class="space-y-6">
+                    <div class="glass p-6 md:p-8 rounded-[2rem] border border-white/5 space-y-4">
+                        <h2 class="text-xl md:text-2xl font-black uppercase italic text-red-600">Nossa História</h2>
+                        <div class="text-gray-400 text-xs md:text-sm leading-relaxed italic font-light space-y-4">
+                            <p>A VRZ Blindados consolidou-se como autoridade máxima em engenharia de proteção no Brasil. Nossa jornada é pautada pelo compromisso de unir segurança extrema à integridade dinâmica de veículos premium.</p>
+                            <p>Operando em uma planta industrial de alta tecnologia em São Bernardo do Campo, integramos materiais de última geração e o sistema exclusivo Udura® para garantir que a segurança e o prazer de dirigir caminhem juntos.</p>
                         </div>
                     </div>
-                    <div class="glass p-8 rounded-[2.5rem] border border-white/5 space-y-6">
-                        <h2 class="text-xl font-black uppercase italic text-white flex items-center gap-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                    <div class="glass p-6 md:p-8 rounded-[2rem] border border-white/5 space-y-4">
+                        <h2 class="text-lg font-black uppercase italic text-white flex items-center gap-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
                             Onde Estamos
                         </h2>
-                        <p class="text-gray-400 text-sm italic leading-loose">R. Oneda, 615 - Planalto, São Bernardo do Campo - SP, 09895-280</p>
+                        <p class="text-gray-400 text-xs italic leading-loose">R. Oneda, 615 - Planalto, São Bernardo do Campo - SP, 09895-280</p>
                         <div class="flex gap-4">
-                            <a href="https://www.linkedin.com/company/vrz-blindados/" target="_blank" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-all hover:scale-105">LinkedIn</a>
-                            <a href="https://www.instagram.com/vrzblindados/" target="_blank" class="bg-red-600 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-all hover:scale-105">Instagram</a>
+                            <a href="https://www.linkedin.com/company/vrz-blindados/" target="_blank" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-[9px] font-black uppercase transition-all">LinkedIn</a>
+                            <a href="https://www.instagram.com/vrzblindados/" target="_blank" class="bg-red-600 text-white px-4 py-2 rounded-xl text-[9px] font-black uppercase transition-all">Instagram</a>
                         </div>
                     </div>
                 </div>
 
-                <div class="space-y-8">
-                    <div class="glass p-8 rounded-[2.5rem] border border-white/5 space-y-6">
+                <div class="space-y-6">
+                    <div class="glass p-6 md:p-8 rounded-[2rem] border border-white/5 space-y-6 overflow-hidden">
                         <h2 class="text-xl font-black uppercase italic text-white">Destaques</h2>
-                        <!-- CARROSSEL CORRIGIDO: 3 VIDEOS E 1 FOTO EM FORMATO RETRATO 9/16 -->
-                        <div class="carousel-container flex gap-4 pb-4">
-                            <!-- VIDEO 1 - RETRATO -->
-                            <div class="carousel-item rounded-2xl border border-white/5 overflow-hidden aspect-[9/16] bg-black">
-                                <video autoplay muted loop playsinline webkit-playsinline class="w-full h-full object-cover">
+                        <!-- CARROSSEL CONFIGURADO PARA MOSTRAR 3 VIDEOS E 1 FOTO EM RETRATO -->
+                        <div class="carousel-container custom-scrollbar">
+                            <div class="carousel-item rounded-xl border border-white/10 overflow-hidden aspect-[9/16] bg-black">
+                                <video autoplay muted loop playsinline class="w-full h-full object-cover">
                                     <source src="video1.mp4.mp4" type="video/mp4">
                                 </video>
                             </div>
-                            <!-- VIDEO 2 - RETRATO -->
-                            <div class="carousel-item rounded-2xl border border-white/5 overflow-hidden aspect-[9/16] bg-black">
-                                <video autoplay muted loop playsinline webkit-playsinline class="w-full h-full object-cover">
+                            <div class="carousel-item rounded-xl border border-white/10 overflow-hidden aspect-[9/16] bg-black">
+                                <video autoplay muted loop playsinline class="w-full h-full object-cover">
                                     <source src="video2.mp4.mp4" type="video/mp4">
                                 </video>
                             </div>
-                            <!-- VIDEO 3 - RETRATO -->
-                            <div class="carousel-item rounded-2xl border border-white/5 overflow-hidden aspect-[9/16] bg-black">
-                                <video autoplay muted loop playsinline webkit-playsinline class="w-full h-full object-cover">
+                            <div class="carousel-item rounded-xl border border-white/10 overflow-hidden aspect-[9/16] bg-black">
+                                <video autoplay muted loop playsinline class="w-full h-full object-cover">
                                     <source src="video3.mp4.mp4" type="video/mp4">
                                 </video>
                             </div>
-                            <!-- FOTO - RETRATO (video4.mp3.jpg) -->
-                            <div class="carousel-item rounded-2xl border border-white/5 overflow-hidden aspect-[9/16] bg-black">
-                                <img src="video4.mp3.jpg" class="w-full h-full object-cover" alt="VRZ Highlight Portrait">
+                            <div class="carousel-item rounded-xl border border-white/10 overflow-hidden aspect-[9/16] bg-black">
+                                <img src="video4.mp3.jpg" class="w-full h-full object-cover" alt="VRZ Highlight">
                             </div>
                         </div>
-                        <p class="text-[9px] text-gray-500 italic text-center">Inovação e Rigor Técnico em cada detalhe da nossa linha de produção.</p>
-                    </div>
-
-                    <div class="bg-gradient-to-br from-red-600 to-red-900 p-8 rounded-[2.5rem] shadow-2xl relative overflow-hidden group">
-                        <div class="relative z-10 space-y-4">
-                            <h3 class="text-3xl font-black italic uppercase leading-none">Website Oficial</h3>
-                            <a href="https://www.vrzblindados.com.br/" target="_blank" class="inline-block bg-black py-4 px-8 rounded-xl font-black uppercase italic text-[10px] tracking-widest mt-4 hover:scale-105 transition-transform">Visitar Agora</a>
-                        </div>
+                        <p class="text-[8px] text-gray-600 italic text-center uppercase tracking-widest">Rigor técnico em cada detalhe de produção.</p>
                     </div>
                 </div>
             </div>
         </section>
     </main>
 
-    <footer class="p-12 border-t border-gray-900 text-center">
-        <a href="https://www.vrzblindados.com.br/" target="_blank" class="text-gray-800 text-[8px] uppercase tracking-[0.8em] font-black">www.vrzblindados.com.br</a>
+    <footer class="p-8 border-t border-gray-900 text-center">
+        <a href="https://www.vrzblindados.com.br/" target="_blank" class="text-gray-800 text-[8px] uppercase tracking-[0.6em] font-black hover:text-red-600 transition-colors">www.vrzblindados.com.br</a>
     </footer>
 
     <script type="module">
@@ -314,39 +300,28 @@
                         loadSuggestions();
                     }
                 });
-                document.querySelectorAll('video').forEach(v => v.play().catch(e => console.log("Play aguardando interação")));
             } catch (e) { console.error(e); }
             finally { setTimeout(() => { if(loader) { loader.style.opacity = '0'; setTimeout(() => loader.remove(), 500); } }, 1000); }
         };
 
         window.loginAdmin = () => {
-            const pass = prompt("Senha Admin:");
+            const pass = prompt("Acesso Admin:");
             if (pass === "VRZ2024") {
                 isAdmin = true;
-                document.body.classList.add('is-admin');
-                document.getElementById('adminStatus').innerText = "ADMINISTRADOR ATIVO";
+                document.getElementById('userIdDisplay').innerText = "ADMIN-MODE";
                 loadSuggestions();
             }
-        };
-
-        window.deleteSuggestion = async (id) => {
-            if(!isAdmin) return;
-            if(confirm("Excluir?")) { try { await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'suggestions', id)); } catch(e) { console.error(e); } }
-        };
-
-        window.commentSuggestion = async (id) => {
-            if(!isAdmin) return;
-            const comment = prompt("Resposta:");
-            if(comment) { try { await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'suggestions', id), { adminComment: comment, respondedAt: serverTimestamp() }); } catch(e) { console.error(e); } }
         };
 
         window.showPage = (id) => {
             document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            const target = document.getElementById(`page-${id}`);
-            if(target) target.classList.add('active');
-            const btn = document.getElementById(`nav-${id}`);
-            if(btn) btn.classList.add('active');
+            document.querySelectorAll('.mobile-nav div').forEach(d => d.classList.replace('bg-red-600', 'bg-transparent'));
+            
+            document.getElementById(`page-${id}`)?.classList.add('active');
+            document.getElementById(`nav-${id}`)?.classList.add('active');
+            document.getElementById(`m-nav-${id}`)?.classList.replace('bg-transparent', 'bg-red-600');
+            
             window.scrollTo({top: 0, behavior: 'smooth'});
         };
 
@@ -358,14 +333,11 @@
                 if(!list) return;
                 list.innerHTML = '';
                 const docs = snap.docs.map(doc => ({id: doc.id, ...doc.data()})).sort((a,b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
-                if(docs.length === 0) { list.innerHTML = 'Sem registros.'; return; }
+                if(docs.length === 0) { list.innerHTML = '<div class="text-center py-10 opacity-20">Vazio</div>'; return; }
                 docs.forEach(data => {
                     const div = document.createElement('div');
-                    div.className = 'glass p-6 rounded-2xl suggestion-card space-y-3';
-                    const time = data.timestamp ? new Date(data.timestamp.seconds * 1000).toLocaleDateString('pt-BR') : 'Agora';
-                    let adminSection = isAdmin ? `<div class="admin-controls flex flex-col gap-2 mt-4"><button onclick="commentSuggestion('${data.id}')" class="text-[8px] font-black text-blue-400 text-left uppercase">● Responder</button><button onclick="deleteSuggestion('${data.id}')" class="text-[8px] font-black text-red-600 text-left uppercase">● Excluir</button></div>` : '';
-                    let responseUI = data.adminComment ? `<div class="mt-4 p-4 bg-white/5 rounded-xl border border-l-2 border-l-red-600"><span class="text-[8px] font-black text-red-600 uppercase mb-1 block italic">VRZ Feedback</span><p class="text-gray-400 text-xs">${data.adminComment}</p></div>` : '';
-                    div.innerHTML = `<div class="flex justify-between items-start"><div class="space-y-1"><span class="text-red-500 font-black uppercase text-[10px] tracking-widest">${data.name}</span><div class="text-[8px] text-gray-500 uppercase font-bold"><span>${data.sector}</span> ● <span>Linha: ${data.prodLine || '-'}</span> ● <span>${time}</span></div></div></div><p class="text-gray-300 text-sm italic font-light">"${data.text}"</p>${responseUI}${adminSection}`;
+                    div.className = 'glass p-4 rounded-2xl suggestion-card space-y-2';
+                    div.innerHTML = `<div class="flex justify-between items-start"><span class="text-red-500 font-black uppercase text-[9px] tracking-widest">${data.name}</span><span class="text-[7px] text-gray-700">${data.sector}</span></div><p class="text-gray-300 italic text-[11px]">"${data.text}"</p>`;
                     list.appendChild(div);
                 });
             });
@@ -393,8 +365,8 @@
             try {
                 const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] }) });
                 const data = await res.json();
-                return data.candidates?.[0]?.content?.parts?.[0]?.text || "Erro no processamento.";
-            } catch (e) { return "Erro de Conexão."; }
+                return data.candidates?.[0]?.content?.parts?.[0]?.text || "Erro técnico.";
+            } catch (e) { return "Erro de conexão."; }
         }
 
         window.analyzeModel = async (m) => {
@@ -402,7 +374,7 @@
             const content = document.getElementById('analysisContent');
             modal.classList.remove('hidden');
             modal.scrollIntoView({ behavior: 'smooth' });
-            content.innerText = "Consultando base de dados VRZ...";
+            content.innerText = "Gerando análise balística VRZ...";
             const prompt = `Gera um relatório técnico profissional de blindagem para o modelo ${m}. Responda em Português do Brasil de forma formal.`;
             content.innerText = await callGemini(prompt);
         };
