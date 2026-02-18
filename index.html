@@ -280,7 +280,6 @@
                             <input type="text" id="userName" required class="input-field" placeholder="Seu nome completo">
                         </div>
                         
-                        <!-- DEPARTAMENTO / SETOR ALTERADO PARA INPUT DE TEXTO -->
                         <div class="input-group">
                             <label>Departamento / Setor</label>
                             <input type="text" id="userSector" required class="input-field" placeholder="Digite seu setor ou departamento">
@@ -334,6 +333,7 @@
             measurementId: "G-9769Y329L2"
         };
         
+        // CHAVE DA IA GEMINI (Certifique-se de que esta chave está ativa no Google AI Studio)
         const geminiApiKey = "AIzaSyBs8w8OxcvcWw9-Q4lyz9LrO3py_DpWOWc"; 
         const appId = 'vrz-portal-github-lucas-v2';
 
@@ -377,12 +377,10 @@
                 const list = document.getElementById('suggestionsList');
                 list.innerHTML = '';
                 const docs = snap.docs.map(doc => doc.data()).sort((a,b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
-                
                 if(docs.length === 0) {
                     list.innerHTML = '<div class="glass p-8 rounded-2xl text-center text-gray-500 italic">Nenhuma proposta registrada. Seja o primeiro a inovar!</div>';
                     return;
                 }
-
                 docs.forEach(data => {
                     const div = document.createElement('div');
                     div.className = 'glass p-6 rounded-2xl suggestion-card space-y-3';
@@ -412,43 +410,46 @@
             const sector = document.getElementById('userSector').value.trim();
             if (!name || !text || !db) return;
             btn.disabled = true;
-            btn.innerHTML = '<span class="animate-pulse">PROCESSANDO...</span>';
             try {
                 await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'suggestions'), { name, sector, text, timestamp: serverTimestamp() });
                 document.getElementById('userText').value = '';
                 btn.innerHTML = '<span>SUGESTÃO ENVIADA!</span>';
-                setTimeout(() => { 
-                    btn.innerHTML = '<span>Enviar Proposta</span>'; 
-                    btn.disabled = false; 
-                }, 3000);
-            } catch (e) { 
-                btn.innerHTML = '<span>ERRO AO ENVIAR</span>';
-                setTimeout(() => { btn.innerHTML = '<span>Enviar Proposta</span>'; btn.disabled = false; }, 2000);
-            }
+                setTimeout(() => { btn.innerHTML = '<span>Enviar Proposta</span>'; btn.disabled = false; }, 3000);
+            } catch (e) { btn.disabled = false; }
         };
 
+        // FUNÇÃO DE IA CORRIGIDA (Versão v1 estável)
         async function callGemini(promptText) {
             if (!geminiApiKey || geminiApiKey.trim() === "") {
-                return "Erro: Chave de API da IA não encontrada.";
+                return "Erro: Chave de API da IA não encontrada no código.";
             }
 
             try {
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`, {
+                // Alterado de v1beta para v1 para maior estabilidade com o modelo flash
+                const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`;
+                
+                const res = await fetch(url, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
+                    body: JSON.stringify({ 
+                        contents: [{ parts: [{ text: promptText }] }] 
+                    })
                 });
 
                 if (!res.ok) {
                     const errorDetails = await res.json();
-                    return `Erro da API Gemini (${res.status}): ${errorDetails.error?.message || 'Verifique sua cota.'}`;
+                    return `Erro da API Gemini (${res.status}): ${errorDetails.error?.message || 'Verifique se sua chave tem permissão para o modelo 1.5-flash.'}`;
                 }
 
                 const data = await res.json();
-                return data.candidates?.[0]?.content?.parts?.[0]?.text || "A IA não conseguiu gerar uma resposta.";
+                if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
+                    return data.candidates[0].content.parts[0].text;
+                } else {
+                    return "A IA não retornou um formato de texto válido. Tente novamente.";
+                }
             } catch (e) { 
                 console.error("Erro na chamada Gemini:", e);
-                return "Erro de conexão: Verifique sua internet."; 
+                return "Erro de conexão: Não foi possível alcançar os servidores da Google. Verifique sua rede."; 
             }
         }
 
@@ -457,8 +458,10 @@
             const chat = document.getElementById('chatHistory');
             const q = input.value.trim();
             if (!q) return;
+            
             chat.innerHTML += `<div class="text-right text-blue-400 text-sm mb-4">● ${q}</div>`;
             input.value = '';
+            
             const response = await callGemini(q);
             chat.innerHTML += `<div class="bg-white/5 p-4 rounded-xl mb-6 text-gray-400 text-sm leading-relaxed italic border border-white/5">${response}</div>`;
             chat.scrollTop = chat.scrollHeight;
@@ -470,7 +473,9 @@
             modal.classList.remove('hidden');
             modal.scrollIntoView({ behavior: 'smooth' });
             content.innerText = "Consultando base de dados de engenharia balística VRZ...";
-            const prompt = `Gera um relatório técnico de engenharia extremamente profissional sobre a blindagem NIJ III-A para o modelo ${m}. Inclua detalhes sobre a distribuição de peso e a performance esperada com mantas Udura. Responda em Português do Brasil.`;
+            
+            const prompt = `Gera um relatório técnico de engenharia extremamente profissional sobre a blindagem NIJ III-A para o modelo ${m}. Inclua detalhes sobre a distribuição de peso, reforço de suspensão necessário e a performance esperada com mantas Udura. Responda em Português do Brasil de forma executiva.`;
+            
             content.innerText = await callGemini(prompt);
         };
     </script>
