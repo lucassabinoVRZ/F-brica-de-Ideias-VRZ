@@ -29,8 +29,11 @@
         .input-group label { font-size: 9px; text-transform: uppercase; color: #666; font-weight: 900; letter-spacing: 0.1em; margin-bottom: 6px; display: block; }
         .input-field { width: 100%; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 14px; font-size: 13px; color: white; outline: none; transition: all 0.3s; }
         .input-field:focus { border-color: #dc2626; background: rgba(255,255,255,0.05); box-shadow: 0 0 15px rgba(220, 38, 38, 0.1); }
-        .suggestion-card { border-left: 3px solid #dc2626; transition: all 0.3s; }
+        .suggestion-card { border-left: 3px solid #dc2626; transition: all 0.3s; position: relative; }
         .suggestion-card:hover { transform: translateX(5px); background: rgba(255,255,255,0.03); }
+        
+        .admin-controls { display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.05); gap: 10px; }
+        body.is-admin .admin-controls { display: flex; flex-direction: column; }
     </style>
 </head>
 <body class="min-h-screen">
@@ -69,62 +72,35 @@
                 <p class="text-gray-500 max-w-2xl mx-auto text-sm italic">Compromisso absoluto com a proteção da vida e excelência técnica.</p>
             </div>
 
-            <!-- Missão, Visão e Valores -->
             <div class="grid md:grid-cols-3 gap-8">
-                <!-- MISSÃO -->
                 <div class="glass p-8 rounded-3xl border-t border-red-600/30 flex flex-col h-full">
-                    <div class="icon-box">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                    </div>
+                    <div class="icon-box"><svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
                     <h3 class="text-xl font-black uppercase italic mb-4 text-red-600">Missão</h3>
                     <p class="text-gray-400 text-sm leading-relaxed">Oferecer blindagem automotiva de excelência no Brasil, aliando tecnologia, segurança e preservação do design original, superando expectativas e transmitindo valor agregado em cada entrega.</p>
                 </div>
 
-                <!-- VISÃO -->
                 <div class="glass p-8 rounded-3xl border-t border-white/10 flex flex-col h-full">
-                    <div class="icon-box" style="background: #222;">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M22 12h-4M2 12h4M12 2v4M12 22v-4"/></svg>
-                    </div>
+                    <div class="icon-box" style="background: #222;"><svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M22 12h-4M2 12h4M12 2v4M12 22v-4"/></svg></div>
                     <h3 class="text-xl font-black uppercase italic mb-4 text-white">Visão</h3>
                     <p class="text-gray-400 text-sm leading-relaxed italic">Ser reconhecida como a melhor empresa de blindagem automotiva premium do país, pela qualidade, inovação e responsabilidade social e ambiental, atendendo de forma personalizada às necessidades de clientes exigentes.</p>
                 </div>
 
-                <!-- VALORES -->
                 <div class="glass p-8 rounded-3xl border-t border-white/10 flex flex-col h-full">
-                    <div class="icon-box" style="background: #222;">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0l-.77.78-.77-.78a5.4 5.4 0 0 0-7.65 7.65l.77.78L12 20.24l7.23-7.23.77-.78a5.4 5.4 0 0 0 0-7.65z"/></svg>
-                    </div>
+                    <div class="icon-box" style="background: #222;"><svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0l-.77.78-.77-.78a5.4 5.4 0 0 0-7.65 7.65l.77.78L12 20.24l7.23-7.23.77-.78a5.4 5.4 0 0 0 0-7.65z"/></svg></div>
                     <h3 class="text-xl font-black uppercase italic mb-4 text-white">Valores</h3>
                     <div class="space-y-4">
                         <p class="text-[11px] text-gray-300 font-bold leading-tight border-b border-white/5 pb-3">Como empresa de blindagem automotiva, valorizamos a vida acima de tudo. Por isso, respeitamos e cuidamos de tudo que envolve proporcionar a melhor experiência para todos que são tocados pela VRZ.</p>
-                        
                         <div class="grid gap-3">
-                            <div class="text-[10px] italic leading-tight">
-                                <span class="text-red-500 font-black uppercase tracking-wider block mb-1">ÉTICA</span>
-                                <span class="text-gray-500">Sempre agir com transparência, responsabilidade e respeito às leis e aos nossos clientes.</span>
-                            </div>
-                            <div class="text-[10px] italic leading-tight">
-                                <span class="text-red-500 font-black uppercase tracking-wider block mb-1">PESSOAS</span>
-                                <span class="text-gray-500">Buscamos valorizar e qualificar nossa equipe para entregar com excelência e satisfação de ser parte do time VRZ.</span>
-                            </div>
-                            <div class="text-[10px] italic leading-tight">
-                                <span class="text-red-500 font-black uppercase tracking-wider block mb-1">INOVAÇÃO</span>
-                                <span class="text-gray-500">A VRZ investe continuamente em tecnologias que elevem o padrão das blindagens.</span>
-                            </div>
-                            <div class="text-[10px] italic leading-tight">
-                                <span class="text-red-500 font-black uppercase tracking-wider block mb-1">QUALIDADE</span>
-                                <span class="text-gray-500">É vital seguirmos padrões rigorosos em cada etapa, garantindo segurança e performance.</span>
-                            </div>
-                            <div class="text-[10px] italic leading-tight">
-                                <span class="text-red-500 font-black uppercase tracking-wider block mb-1">CONFIABILIDADE</span>
-                                <span class="text-gray-500">Seguimos construindo relacionamentos sólidos baseados em confiança e excelência de resultados.</span>
-                            </div>
+                            <div class="text-[10px] italic leading-tight"><span class="text-red-500 font-black uppercase tracking-wider block mb-1">ÉTICA</span><span class="text-gray-500">Sempre agir com transparência, responsabilidade e respeito às leis e aos nossos clientes.</span></div>
+                            <div class="text-[10px] italic leading-tight"><span class="text-red-500 font-black uppercase tracking-wider block mb-1">PESSOAS</span><span class="text-gray-500">Buscamos valorizar e qualificar nossa equipe para entregar com excelência e satisfação de ser parte do time VRZ.</span></div>
+                            <div class="text-[10px] italic leading-tight"><span class="text-red-500 font-black uppercase tracking-wider block mb-1">INOVAÇÃO</span><span class="text-gray-500">A VRZ investe continuamente em tecnologias que elevem o padrão das blindagens.</span></div>
+                            <div class="text-[10px] italic leading-tight"><span class="text-red-500 font-black uppercase tracking-wider block mb-1">QUALIDADE</span><span class="text-gray-500">É vital seguirmos padrões rigorosos em cada etapa, garantindo segurança e performance.</span></div>
+                            <div class="text-[10px] italic leading-tight"><span class="text-red-500 font-black uppercase tracking-wider block mb-1">CONFIABILIDADE</span><span class="text-gray-500">Seguimos construindo relacionamentos sólidos baseados em confiança e excelência de resultados.</span></div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Detalhes Adicionais da Blindagem -->
             <div class="glass p-8 rounded-[2.5rem] border border-white/5 bg-gradient-to-br from-white/[0.02] to-transparent">
                 <div class="grid md:grid-cols-2 gap-12 items-center">
                     <div class="space-y-6">
@@ -157,108 +133,52 @@
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Jeep Commander -->
                 <div class="car-card p-8 rounded-[2.5rem] flex flex-col min-h-[300px]" onclick="analyzeModel('Jeep Commander')">
-                    <div class="flex-1 space-y-4">
-                        <span class="tech-badge">SUV Executivo</span>
-                        <h3 class="text-3xl font-black uppercase italic">Jeep Commander</h3>
-                        <p class="text-gray-400 text-sm italic leading-relaxed pt-4 border-t border-white/5">Otimizado para o transporte executivo, este projeto foca no isolamento acústico superior e na manutenção do acabamento interno original da Jeep.</p>
-                    </div>
-                    <div class="pt-6 flex items-center justify-between">
-                        <span class="text-[9px] font-bold text-blue-400 uppercase tracking-widest">Análise Técnica ✨</span>
-                        <div class="w-8 h-8 rounded-full border border-red-600/30 flex items-center justify-center text-red-600">→</div>
-                    </div>
+                    <div class="flex-1 space-y-4"><span class="tech-badge">SUV Executivo</span><h3 class="text-3xl font-black uppercase italic">Jeep Commander</h3><p class="text-gray-400 text-sm italic leading-relaxed pt-4 border-t border-white/5">Otimizado para o transporte executivo, focado no isolamento acústico superior.</p></div>
+                    <div class="pt-6 flex items-center justify-between"><span class="text-[9px] font-bold text-blue-400 uppercase tracking-widest">Análise Técnica ✨</span><div class="w-8 h-8 rounded-full border border-red-600/30 flex items-center justify-center text-red-600">→</div></div>
                 </div>
-
-                <!-- BMW X5 -->
                 <div class="car-card p-8 rounded-[2.5rem] flex flex-col min-h-[300px]" onclick="analyzeModel('BMW X5')">
-                    <div class="flex-1 space-y-4">
-                        <span class="tech-badge">Sport Luxury</span>
-                        <h3 class="text-3xl font-black uppercase italic">BMW X5</h3>
-                        <p class="text-gray-400 text-sm italic leading-relaxed pt-4 border-t border-white/5">Blindagem perimetral total com preservação integral dos sensores ADAS e sistemas de segurança ativa, mantendo o DNA de performance esportiva da BMW.</p>
-                    </div>
-                    <div class="pt-6 flex items-center justify-between">
-                        <span class="text-[9px] font-bold text-blue-400 uppercase tracking-widest">Análise Técnica ✨</span>
-                        <div class="w-8 h-8 rounded-full border border-red-600/30 flex items-center justify-center text-red-600">→</div>
-                    </div>
+                    <div class="flex-1 space-y-4"><span class="tech-badge">Sport Luxury</span><h3 class="text-3xl font-black uppercase italic">BMW X5</h3><p class="text-gray-400 text-sm italic leading-relaxed pt-4 border-t border-white/5">Blindagem perimetral total com preservação integral dos sensores ADAS.</p></div>
+                    <div class="pt-6 flex items-center justify-between"><span class="text-[9px] font-bold text-blue-400 uppercase tracking-widest">Análise Técnica ✨</span><div class="w-8 h-8 rounded-full border border-red-600/30 flex items-center justify-center text-red-600">→</div></div>
                 </div>
-
-                <!-- Toyota SW4 -->
                 <div class="car-card p-8 rounded-[2.5rem] flex flex-col min-h-[300px]" onclick="analyzeModel('Toyota SW4')">
-                    <div class="flex-1 space-y-4">
-                        <span class="tech-badge">Off-Road Robust</span>
-                        <h3 class="text-3xl font-black uppercase italic">Toyota SW4</h3>
-                        <p class="text-gray-400 text-sm italic leading-relaxed pt-4 border-t border-white/5">Projetada para terrenos severos. Inclui proteção estratégica de radiador e bateria, garantindo a operacionalidade do veículo em cenários de fuga críticos.</p>
-                    </div>
-                    <div class="pt-6 flex items-center justify-between">
-                        <span class="text-[9px] font-bold text-blue-400 uppercase tracking-widest">Análise Técnica ✨</span>
-                        <div class="w-8 h-8 rounded-full border border-red-600/30 flex items-center justify-center text-red-600">→</div>
-                    </div>
+                    <div class="flex-1 space-y-4"><span class="tech-badge">Off-Road Robust</span><h3 class="text-3xl font-black uppercase italic">Toyota SW4</h3><p class="text-gray-400 text-sm italic leading-relaxed pt-4 border-t border-white/5">Projetada para terrenos severos. Inclui proteção estratégica de radiador.</p></div>
+                    <div class="pt-6 flex items-center justify-between"><span class="text-[9px] font-bold text-blue-400 uppercase tracking-widest">Análise Técnica ✨</span><div class="w-8 h-8 rounded-full border border-red-600/30 flex items-center justify-center text-red-600">→</div></div>
                 </div>
-
-                <!-- Volvo XC90 -->
                 <div class="car-card p-8 rounded-[2.5rem] flex flex-col min-h-[300px]" onclick="analyzeModel('Volvo XC90')">
-                    <div class="flex-1 space-y-4">
-                        <span class="tech-badge">Safety Legend</span>
-                        <h3 class="text-3xl font-black uppercase italic">Volvo XC90</h3>
-                        <p class="text-gray-400 text-sm italic leading-relaxed pt-4 border-t border-white/5">Integração invisível da blindagem. O projeto VRZ para a Volvo XC90 respeita todos os protocolos de segurança passiva do fabricante.</p>
-                    </div>
-                    <div class="pt-6 flex items-center justify-between">
-                        <span class="text-[9px] font-bold text-blue-400 uppercase tracking-widest">Análise Técnica ✨</span>
-                        <div class="w-8 h-8 rounded-full border border-red-600/30 flex items-center justify-center text-red-600">→</div>
-                    </div>
+                    <div class="flex-1 space-y-4"><span class="tech-badge">Safety Legend</span><h3 class="text-3xl font-black uppercase italic">Volvo XC90</h3><p class="text-gray-400 text-sm italic leading-relaxed pt-4 border-t border-white/5">Integração invisível da blindagem. Respeita protocolos de segurança original.</p></div>
+                    <div class="pt-6 flex items-center justify-between"><span class="text-[9px] font-bold text-blue-400 uppercase tracking-widest">Análise Técnica ✨</span><div class="w-8 h-8 rounded-full border border-red-600/30 flex items-center justify-center text-red-600">→</div></div>
                 </div>
-
-                <!-- Porsche Cayenne -->
                 <div class="car-card p-8 rounded-[2.5rem] flex flex-col min-h-[300px]" onclick="analyzeModel('Porsche Cayenne')">
-                    <div class="flex-1 space-y-4">
-                        <span class="tech-badge">Sport Performance</span>
-                        <h3 class="text-3xl font-black uppercase italic">Porsche Cayenne</h3>
-                        <p class="text-gray-400 text-sm italic leading-relaxed pt-4 border-t border-white/5">Engenharia de peso reduzido através de compósitos aeroespaciais, focada em condutores que não abrem mão da dinâmica e aceleração originais.</p>
-                    </div>
-                    <div class="pt-6 flex items-center justify-between">
-                        <span class="text-[9px] font-bold text-blue-400 uppercase tracking-widest">Análise Técnica ✨</span>
-                        <div class="w-8 h-8 rounded-full border border-red-600/30 flex items-center justify-center text-red-600">→</div>
-                    </div>
+                    <div class="flex-1 space-y-4"><span class="tech-badge">Sport Performance</span><h3 class="text-3xl font-black uppercase italic">Porsche Cayenne</h3><p class="text-gray-400 text-sm italic leading-relaxed pt-4 border-t border-white/5">Engenharia de peso reduzido com compósitos aeroespaciais.</p></div>
+                    <div class="pt-6 flex items-center justify-between"><span class="text-[9px] font-bold text-blue-400 uppercase tracking-widest">Análise Técnica ✨</span><div class="w-8 h-8 rounded-full border border-red-600/30 flex items-center justify-center text-red-600">→</div></div>
                 </div>
-
-                <!-- Land Rover Defender -->
                 <div class="car-card p-8 rounded-[2.5rem] flex flex-col min-h-[300px]" onclick="analyzeModel('Land Rover Defender')">
-                    <div class="flex-1 space-y-4">
-                        <span class="tech-badge">Extreme Utility</span>
-                        <h3 class="text-3xl font-black uppercase italic">Defender 110</h3>
-                        <p class="text-gray-400 text-sm italic leading-relaxed pt-4 border-t border-white/5">O verdadeiro forte móvel. Blindagem perimetral estendida com reforços de dobradiças para suportar expedições em zonas de alto risco.</p>
-                    </div>
-                    <div class="pt-6 flex items-center justify-between">
-                        <span class="text-[9px] font-bold text-blue-400 uppercase tracking-widest">Análise Técnica ✨</span>
-                        <div class="w-8 h-8 rounded-full border border-red-600/30 flex items-center justify-center text-red-600">→</div>
-                    </div>
+                    <div class="flex-1 space-y-4"><span class="tech-badge">Extreme Utility</span><h3 class="text-3xl font-black uppercase italic">Defender 110</h3><p class="text-gray-400 text-sm italic leading-relaxed pt-4 border-t border-white/5">Forte móvel. Blindagem perimetral estendida para expedições.</p></div>
+                    <div class="pt-6 flex items-center justify-between"><span class="text-[9px] font-bold text-blue-400 uppercase tracking-widest">Análise Técnica ✨</span><div class="w-8 h-8 rounded-full border border-red-600/30 flex items-center justify-center text-red-600">→</div></div>
+                </div>
+                <div class="car-card p-8 rounded-[2.5rem] flex flex-col min-h-[300px]" onclick="analyzeModel('Mercedes-Benz GLE')">
+                    <div class="flex-1 space-y-4"><span class="tech-badge">Luxury Excellence</span><h3 class="text-3xl font-black uppercase italic">Mercedes GLE</h3><p class="text-gray-400 text-sm italic leading-relaxed pt-4 border-t border-white/5">Blindagem perimetral discreta com foco em segurança urbana.</p></div>
+                    <div class="pt-6 flex items-center justify-between"><span class="text-[9px] font-bold text-blue-400 uppercase tracking-widest">Análise Técnica ✨</span><div class="w-8 h-8 rounded-full border border-red-600/30 flex items-center justify-center text-red-600">→</div></div>
+                </div>
+                <div class="car-card p-8 rounded-[2.5rem] flex flex-col min-h-[300px]" onclick="analyzeModel('Audi Q8')">
+                    <div class="flex-1 space-y-4"><span class="tech-badge">Futuristic Armor</span><h3 class="text-3xl font-black uppercase italic">Audi Q8</h3><p class="text-gray-400 text-sm italic leading-relaxed pt-4 border-t border-white/5">Proteção de elite alemã com integração perfeita de vidros curvos.</p></div>
+                    <div class="pt-6 flex items-center justify-between"><span class="text-[9px] font-bold text-blue-400 uppercase tracking-widest">Análise Técnica ✨</span><div class="w-8 h-8 rounded-full border border-red-600/30 flex items-center justify-center text-red-600">→</div></div>
+                </div>
+                <div class="car-card p-8 rounded-[2.5rem] flex flex-col min-h-[300px]" onclick="analyzeModel('Range Rover Vogue')">
+                    <div class="flex-1 space-y-4"><span class="tech-badge">Ultimate Luxury</span><h3 class="text-3xl font-black uppercase italic">Rover Vogue</h3><p class="text-gray-400 text-sm italic leading-relaxed pt-4 border-t border-white/5">Ápice do luxo blindado com reforço estrutural integral.</p></div>
+                    <div class="pt-6 flex items-center justify-between"><span class="text-[9px] font-bold text-blue-400 uppercase tracking-widest">Análise Técnica ✨</span><div class="w-8 h-8 rounded-full border border-red-600/30 flex items-center justify-center text-red-600">→</div></div>
                 </div>
             </div>
-
-            <div id="aiAnalysisResult" class="hidden glass p-10 rounded-[3rem] border border-blue-500/20 mt-12 shadow-2xl">
-                <div class="flex gap-6 items-start">
-                    <div class="text-4xl">✨</div>
-                    <div class="flex-1">
-                        <h3 class="text-2xl font-black italic uppercase text-white mb-4">Relatório de Engenharia VRZ</h3>
-                        <div id="analysisContent" class="text-gray-400 text-sm leading-relaxed whitespace-pre-wrap italic font-light"></div>
-                        <button onclick="this.parentElement.parentElement.parentElement.classList.add('hidden')" class="mt-8 text-[10px] font-black uppercase text-gray-600 hover:text-red-600 transition-all">Fechar Relatório</button>
-                    </div>
-                </div>
-            </div>
+            <div id="aiAnalysisResult" class="hidden glass p-10 rounded-[3rem] border border-blue-500/20 mt-12 shadow-2xl"><div class="flex gap-6 items-start"><div class="text-4xl">✨</div><div class="flex-1"><h3 class="text-2xl font-black italic uppercase text-white mb-4">Relatório de Engenharia VRZ</h3><div id="analysisContent" class="text-gray-400 text-sm leading-relaxed whitespace-pre-wrap italic font-light"></div><button onclick="this.parentElement.parentElement.parentElement.classList.add('hidden')" class="mt-8 text-[10px] font-black uppercase text-gray-600 hover:text-red-600 transition-all">Fechar Relatório</button></div></div></div>
         </section>
 
         <!-- PÁGINA: ASSISTENTE IA -->
         <section id="page-ai-assistant" class="page-content space-y-8">
             <h1 class="text-4xl font-black italic uppercase text-center">Consultor <span class="text-blue-500">Virtual ✨</span></h1>
             <div class="max-w-3xl mx-auto glass p-6 rounded-[2rem] h-[450px] flex flex-col space-y-4 shadow-inner">
-                <div id="chatHistory" class="flex-1 overflow-y-auto custom-scrollbar space-y-4 text-sm pr-2 italic text-gray-400">
-                    <div class="bg-white/5 p-4 rounded-2xl">Olá. Sou o Engenheiro Virtual da VRZ. Posso esclarecer detalhes técnicos sobre os calibres da norma NIJ ou detalhes da nossa frota?</div>
-                </div>
-                <div class="flex gap-2">
-                    <input type="text" id="aiQuery" class="flex-1 bg-black/50 border border-gray-800 rounded-2xl p-4 text-white text-sm" placeholder="Escreva sua dúvida técnica...">
-                    <button onclick="askGemini()" class="bg-blue-600 px-8 rounded-2xl font-black uppercase text-xs">Enviar</button>
-                </div>
+                <div id="chatHistory" class="flex-1 overflow-y-auto custom-scrollbar space-y-4 text-sm pr-2 italic text-gray-400"><div class="bg-white/5 p-4 rounded-2xl">Olá. Sou o Engenheiro Virtual da VRZ. Posso esclarecer detalhes técnicos?</div></div>
+                <div class="flex gap-2"><input type="text" id="aiQuery" class="flex-1 bg-black/50 border border-gray-800 rounded-2xl p-4 text-white text-sm" placeholder="Escreva sua dúvida técnica..."><button onclick="askGemini()" class="bg-blue-600 px-8 rounded-2xl font-black uppercase text-xs">Enviar</button></div>
             </div>
         </section>
 
@@ -270,58 +190,43 @@
             </div>
 
             <div class="grid md:grid-cols-5 gap-8 items-start">
-                <!-- Formulário de Sugestão -->
                 <div class="md:col-span-2 glass p-8 rounded-[2rem] space-y-6 sticky top-24">
                     <h2 class="text-xl font-black uppercase italic border-b border-white/5 pb-4">Nova Proposta</h2>
-                    
                     <form onsubmit="event.preventDefault(); submitFeedback();" class="space-y-5">
-                        <div class="input-group">
-                            <label>Identificação</label>
-                            <input type="text" id="userName" required class="input-field" placeholder="Seu nome completo">
-                        </div>
-                        
-                        <div class="input-group">
-                            <label>Departamento / Setor</label>
-                            <input type="text" id="userSector" required class="input-field" placeholder="Digite seu setor ou departamento">
-                        </div>
-                        
-                        <div class="input-group">
-                            <label>Descrição da Melhoria</label>
-                            <textarea id="userText" required rows="5" class="input-field resize-none custom-scrollbar" placeholder="Descreva sua ideia técnica de forma clara..."></textarea>
-                        </div>
-                        
-                        <button id="submitBtn" class="w-full bg-red-600 py-4 rounded-xl font-black uppercase italic hover:bg-red-700 transition-all flex items-center justify-center gap-2 group">
-                            <span>Enviar Proposta</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
-                        </button>
+                        <div class="input-group"><label>Identificação</label><input type="text" id="userName" required class="input-field" placeholder="Seu nome completo"></div>
+                        <div class="input-group"><label>Departamento / Setor</label><input type="text" id="userSector" required class="input-field" placeholder="Digite seu setor"></div>
+                        <!-- NOVO CAMPO: LINHA DE PRODUÇÃO -->
+                        <div class="input-group"><label>Linha de Produção</label><input type="text" id="userProdLine" required class="input-field" placeholder="Em qual linha você trabalha?"></div>
+                        <div class="input-group"><label>Descrição da Melhoria</label><textarea id="userText" required rows="5" class="input-field resize-none custom-scrollbar" placeholder="Descreva sua ideia técnica..."></textarea></div>
+                        <button id="submitBtn" class="w-full bg-red-600 py-4 rounded-xl font-black uppercase italic hover:bg-red-700 transition-all flex items-center justify-center gap-2 group"><span>Enviar Proposta</span><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg></button>
                     </form>
                 </div>
 
-                <!-- Lista de Sugestões (Feed Cloud) -->
                 <div class="md:col-span-3 space-y-6">
                     <div class="flex items-center justify-between px-2">
-                        <h2 class="text-lg font-bold uppercase italic text-gray-400">Log de Inovações Ativas</h2>
-                        <span class="text-[8px] bg-white/5 px-2 py-1 rounded text-gray-500 border border-white/5 uppercase tracking-widest">Cloud Sincronizado</span>
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-lg font-bold uppercase italic text-gray-400">Log de Inovações Ativas</h2>
+                            <button onclick="loginAdmin()" class="text-gray-700 hover:text-red-600 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                            </button>
+                        </div>
+                        <span id="adminStatus" class="text-[8px] bg-white/5 px-2 py-1 rounded text-gray-500 border border-white/5 uppercase tracking-widest italic">Apenas Leitura</span>
                     </div>
-                    
-                    <div id="suggestionsList" class="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar italic text-xs text-gray-600">
-                        <div class="glass p-6 rounded-2xl animate-pulse">Estabelecendo conexão segura com o servidor VRZ...</div>
-                    </div>
+                    <div id="suggestionsList" class="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar italic text-xs text-gray-600"><div class="glass p-6 rounded-2xl animate-pulse">Sincronizando banco de dados...</div></div>
                 </div>
             </div>
         </section>
     </main>
 
     <footer class="p-12 border-t border-gray-900 text-center">
-        <a href="https://www.vrzblindados.com.br/" target="_blank" class="text-gray-800 text-[8px] uppercase tracking-[0.8em] font-black hover:text-red-600 transition-colors">
-            www.vrzblindados.com.br
-        </a>
+        <a href="https://www.vrzblindados.com.br/" target="_blank" class="text-gray-800 text-[8px] uppercase tracking-[0.8em] font-black hover:text-red-600 transition-colors">www.vrzblindados.com.br</a>
     </footer>
 
+    <!-- Scripts -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAfvmNT31fj5uQsDmb-q-kziFpWXMRxMzs",
@@ -333,11 +238,11 @@
             measurementId: "G-9769Y329L2"
         };
         
-        // CHAVE DA IA GEMINI (Certifique-se de que esta chave está ativa no Google AI Studio)
         const geminiApiKey = "AIzaSyBs8w8OxcvcWw9-Q4lyz9LrO3py_DpWOWc"; 
         const appId = 'vrz-portal-github-lucas-v2';
 
         let auth, db, currentUser = null;
+        let isAdmin = false;
 
         window.onload = async () => {
             const loader = document.getElementById('loader');
@@ -349,24 +254,48 @@
                 onAuthStateChanged(auth, (user) => {
                     if (user) {
                         currentUser = user;
-                        const badge = document.getElementById('userIdDisplay');
-                        badge.innerText = "VRZ-SECURE";
-                        badge.classList.replace('text-red-500', 'text-green-500');
+                        document.getElementById('userIdDisplay').innerText = "VRZ-SECURE";
+                        document.getElementById('userIdDisplay').classList.replace('text-red-500', 'text-green-500');
                         loadSuggestions();
                     }
                 });
-            } catch (e) { 
-                console.error("Firebase Error:", e);
-            } finally {
-                setTimeout(() => { if(loader) { loader.style.opacity = '0'; setTimeout(() => loader.remove(), 500); } }, 1000);
+            } catch (e) { console.error(e); }
+            finally { setTimeout(() => { if(loader) { loader.style.opacity = '0'; setTimeout(() => loader.remove(), 500); } }, 1000); }
+        };
+
+        window.loginAdmin = () => {
+            const pass = prompt("Acesso Administrativo VRZ - Digite a senha:");
+            if (pass === "VRZ2024") {
+                isAdmin = true;
+                document.body.classList.add('is-admin');
+                document.getElementById('adminStatus').innerText = "ADMINISTRADOR ATIVO";
+                document.getElementById('adminStatus').classList.replace('text-gray-500', 'text-red-500');
+                loadSuggestions();
+            }
+        };
+
+        window.deleteSuggestion = async (id) => {
+            if(!isAdmin) return;
+            if(confirm("Deseja realmente excluir esta ideia?")) {
+                try { await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'suggestions', id)); } catch(e) { console.error(e); }
+            }
+        };
+
+        window.commentSuggestion = async (id) => {
+            if(!isAdmin) return;
+            const comment = prompt("Digite seu comentário:");
+            if(comment) {
+                try { await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'suggestions', id), { adminComment: comment, respondedAt: serverTimestamp() }); } catch(e) { console.error(e); }
             }
         };
 
         window.showPage = (id) => {
             document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            document.getElementById(`page-${id}`)?.classList.add('active');
-            document.getElementById(`nav-${id}`)?.classList.add('active');
+            const target = document.getElementById(`page-${id}`);
+            if(target) target.classList.add('active');
+            const btn = document.getElementById(`nav-${id}`);
+            if(btn) btn.classList.add('active');
             window.scrollTo({top: 0, behavior: 'smooth'});
         };
 
@@ -375,28 +304,46 @@
             const ref = collection(db, 'artifacts', appId, 'public', 'data', 'suggestions');
             onSnapshot(ref, (snap) => {
                 const list = document.getElementById('suggestionsList');
+                if(!list) return;
                 list.innerHTML = '';
-                const docs = snap.docs.map(doc => doc.data()).sort((a,b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
-                if(docs.length === 0) {
-                    list.innerHTML = '<div class="glass p-8 rounded-2xl text-center text-gray-500 italic">Nenhuma proposta registrada. Seja o primeiro a inovar!</div>';
-                    return;
-                }
+                const docs = snap.docs.map(doc => ({id: doc.id, ...doc.data()})).sort((a,b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
+                
+                if(docs.length === 0) { list.innerHTML = '<div class="glass p-8 rounded-2xl text-center text-gray-500 italic">Sem registros.</div>'; return; }
+
                 docs.forEach(data => {
                     const div = document.createElement('div');
                     div.className = 'glass p-6 rounded-2xl suggestion-card space-y-3';
                     const time = data.timestamp ? new Date(data.timestamp.seconds * 1000).toLocaleDateString('pt-BR') : 'Agora';
+                    
+                    let adminSection = isAdmin ? `
+                        <div class="admin-controls">
+                            <button onclick="commentSuggestion('${data.id}')" class="text-[8px] font-black text-blue-400 uppercase tracking-widest text-left">● Responder</button>
+                            <button onclick="deleteSuggestion('${data.id}')" class="text-[8px] font-black text-red-600 uppercase tracking-widest text-left">● Excluir</button>
+                        </div>
+                    ` : '';
+
+                    let responseUI = data.adminComment ? `
+                        <div class="mt-4 p-4 bg-white/5 rounded-xl border border-white/5 border-l-2 border-l-red-600">
+                            <span class="text-[8px] font-black text-red-600 uppercase tracking-widest mb-1 block italic">VRZ Feedback</span>
+                            <p class="text-gray-400 text-xs">${data.adminComment}</p>
+                        </div>
+                    ` : '';
+
                     div.innerHTML = `
                         <div class="flex justify-between items-start">
                             <div class="space-y-1">
                                 <span class="text-red-500 font-black uppercase text-[10px] tracking-widest">${data.name}</span>
-                                <div class="flex items-center gap-2">
-                                    <span class="bg-white/5 text-gray-400 px-2 py-0.5 rounded text-[8px] font-bold uppercase">${data.sector || 'Geral'}</span>
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <span class="bg-white/5 text-gray-400 px-2 py-0.5 rounded text-[8px] font-bold uppercase">${data.sector || 'Setor'}</span>
+                                    <span class="bg-red-900/20 text-red-400 px-2 py-0.5 rounded text-[8px] font-bold uppercase">Linha: ${data.prodLine || '-'}</span>
                                     <span class="text-gray-700 text-[8px] font-mono">${time}</span>
                                 </div>
                             </div>
-                            <span class="text-[8px] text-green-500 font-black uppercase border border-green-500/20 px-2 py-0.5 rounded bg-green-500/5">Em Análise</span>
+                            <span class="text-[8px] text-green-500 font-black uppercase border border-green-500/20 px-2 py-0.5 rounded bg-green-500/5">Salvo</span>
                         </div>
                         <p class="text-gray-300 text-sm leading-relaxed italic font-light">"${data.text}"</p>
+                        ${responseUI}
+                        ${adminSection}
                     `;
                     list.appendChild(div);
                 });
@@ -408,49 +355,29 @@
             const name = document.getElementById('userName').value.trim();
             const text = document.getElementById('userText').value.trim();
             const sector = document.getElementById('userSector').value.trim();
+            const prodLine = document.getElementById('userProdLine').value.trim();
             if (!name || !text || !db) return;
             btn.disabled = true;
+            btn.innerHTML = '<span class="animate-pulse">PROCESSANDO...</span>';
             try {
-                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'suggestions'), { name, sector, text, timestamp: serverTimestamp() });
+                await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'suggestions'), { name, sector, prodLine, text, timestamp: serverTimestamp() });
                 document.getElementById('userText').value = '';
                 btn.innerHTML = '<span>SUGESTÃO ENVIADA!</span>';
                 setTimeout(() => { btn.innerHTML = '<span>Enviar Proposta</span>'; btn.disabled = false; }, 3000);
             } catch (e) { btn.disabled = false; }
         };
 
-        // FUNÇÃO DE IA CORRIGIDA (Versão v1 estável)
         async function callGemini(promptText) {
-            if (!geminiApiKey || geminiApiKey.trim() === "") {
-                return "Erro: Chave de API da IA não encontrada no código.";
-            }
-
             try {
-                // Alterado de v1beta para v1 para maior estabilidade com o modelo flash
                 const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`;
-                
                 const res = await fetch(url, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        contents: [{ parts: [{ text: promptText }] }] 
-                    })
+                    body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
                 });
-
-                if (!res.ok) {
-                    const errorDetails = await res.json();
-                    return `Erro da API Gemini (${res.status}): ${errorDetails.error?.message || 'Verifique se sua chave tem permissão para o modelo 1.5-flash.'}`;
-                }
-
                 const data = await res.json();
-                if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
-                    return data.candidates[0].content.parts[0].text;
-                } else {
-                    return "A IA não retornou um formato de texto válido. Tente novamente.";
-                }
-            } catch (e) { 
-                console.error("Erro na chamada Gemini:", e);
-                return "Erro de conexão: Não foi possível alcançar os servidores da Google. Verifique sua rede."; 
-            }
+                return data.candidates?.[0]?.content?.parts[0]?.text || "Erro na resposta.";
+            } catch (e) { return "Erro de conexão."; }
         }
 
         window.askGemini = async () => {
@@ -458,10 +385,8 @@
             const chat = document.getElementById('chatHistory');
             const q = input.value.trim();
             if (!q) return;
-            
             chat.innerHTML += `<div class="text-right text-blue-400 text-sm mb-4">● ${q}</div>`;
             input.value = '';
-            
             const response = await callGemini(q);
             chat.innerHTML += `<div class="bg-white/5 p-4 rounded-xl mb-6 text-gray-400 text-sm leading-relaxed italic border border-white/5">${response}</div>`;
             chat.scrollTop = chat.scrollHeight;
@@ -472,12 +397,11 @@
             const content = document.getElementById('analysisContent');
             modal.classList.remove('hidden');
             modal.scrollIntoView({ behavior: 'smooth' });
-            content.innerText = "Consultando base de dados de engenharia balística VRZ...";
-            
-            const prompt = `Gera um relatório técnico de engenharia extremamente profissional sobre a blindagem NIJ III-A para o modelo ${m}. Inclua detalhes sobre a distribuição de peso, reforço de suspensão necessário e a performance esperada com mantas Udura. Responda em Português do Brasil de forma executiva.`;
-            
+            content.innerText = "Consultando base de dados VRZ...";
+            const prompt = `Gera um relatório técnico de blindagem NIJ III-A para o modelo ${m}. Inclua distribuição de peso e performance com Udura. Português do Brasil.`;
             content.innerText = await callGemini(prompt);
         };
     </script>
 </body>
 </html>
+
