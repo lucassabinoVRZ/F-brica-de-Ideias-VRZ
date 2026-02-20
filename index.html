@@ -40,7 +40,7 @@
         @media (min-width: 768px) { .mobile-nav { display: none; } }
 
         /* Estilos Admin */
-        .admin-btn { font-size: 8px; color: #333; transition: color 0.3s; }
+        .admin-btn { font-size: 8px; color: #333; transition: color 0.3s; outline: none; }
         .admin-btn:hover { color: #dc2626; }
         .reply-box { margin-top: 10px; padding: 10px; background: rgba(220, 38, 38, 0.05); border-radius: 8px; border-left: 2px solid #dc2626; }
     </style>
@@ -56,15 +56,16 @@
 
     <!-- Desktop Navigation -->
     <nav class="p-6 flex justify-between items-center glass sticky top-0 z-50">
-        <div class="flex items-center gap-2 cursor-pointer" onclick="showPage('security')">
+        <div class="flex items-center gap-2 cursor-pointer" onclick="showPage('suggestions')">
             <span class="font-black italic text-xl tracking-tighter text-white">VRZ</span>
             <span class="text-[10px] uppercase tracking-[0.3em] font-light border-l border-white/20 pl-3 hidden sm:block">Blindados</span>
         </div>
         <div class="hidden md:flex gap-8 text-[10px] font-bold uppercase tracking-widest text-gray-400">
-            <button onclick="showPage('security')" id="nav-security" class="nav-link active">Segurança</button>
-            <button onclick="showPage('portfolio')" id="nav-portfolio" class="nav-link">Portfólio</button>
-            <button onclick="showPage('suggestions')" id="nav-suggestions" class="nav-link">Sugestões</button>
+            <!-- ORDEM ALTERADA -->
+            <button onclick="showPage('suggestions')" id="nav-suggestions" class="nav-link active">Sugestões</button>
             <button onclick="showPage('about')" id="nav-about" class="nav-link">Somos VRZ</button>
+            <button onclick="showPage('security')" id="nav-security" class="nav-link">Segurança</button>
+            <button onclick="showPage('portfolio')" id="nav-portfolio" class="nav-link">Portfólio</button>
         </div>
         <div class="text-[9px] text-gray-600 font-mono">
             STATUS: <span id="userIdDisplay" class="text-red-500 italic uppercase">A Conectar</span>
@@ -73,27 +74,104 @@
 
     <!-- Mobile Navigation -->
     <div class="mobile-nav">
-        <button onclick="showPage('security')" class="flex flex-col items-center gap-1">
-            <div id="m-nav-security" class="w-2 h-2 rounded-full bg-red-600"></div>
-            <span class="text-[8px] font-black uppercase text-white tracking-widest">Segurança</span>
-        </button>
-        <button onclick="showPage('portfolio')" class="flex flex-col items-center gap-1">
-            <div id="m-nav-portfolio" class="w-2 h-2 rounded-full bg-transparent"></div>
-            <span class="text-[8px] font-black uppercase text-white tracking-widest">Portfólio</span>
-        </button>
+        <!-- ORDEM ALTERADA -->
         <button onclick="showPage('suggestions')" class="flex flex-col items-center gap-1">
-            <div id="m-nav-suggestions" class="w-2 h-2 rounded-full bg-transparent"></div>
+            <div id="m-nav-suggestions" class="w-2 h-2 rounded-full bg-red-600"></div>
             <span class="text-[8px] font-black uppercase text-white tracking-widest">Sugestões</span>
         </button>
         <button onclick="showPage('about')" class="flex flex-col items-center gap-1">
             <div id="m-nav-about" class="w-2 h-2 rounded-full bg-transparent"></div>
             <span class="text-[8px] font-black uppercase text-white tracking-widest">VRZ</span>
         </button>
+        <button onclick="showPage('security')" class="flex flex-col items-center gap-1">
+            <div id="m-nav-security" class="w-2 h-2 rounded-full bg-transparent"></div>
+            <span class="text-[8px] font-black uppercase text-white tracking-widest">Segurança</span>
+        </button>
+        <button onclick="showPage('portfolio')" class="flex flex-col items-center gap-1">
+            <div id="m-nav-portfolio" class="w-2 h-2 rounded-full bg-transparent"></div>
+            <span class="text-[8px] font-black uppercase text-white tracking-widest">Portfólio</span>
+        </button>
     </div>
 
     <main class="max-w-6xl mx-auto p-4 md:p-8">
-        <!-- PÁGINA: SEGURANÇA -->
-        <section id="page-security" class="page-content active space-y-10 md:space-y-16">
+
+        <!-- 1ª PÁGINA: SUGESTÕES -->
+        <section id="page-suggestions" class="page-content active space-y-10">
+            <h1 class="text-4xl font-black italic uppercase text-center">Canal de <span class="text-red-600">Inovação</span></h1>
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-8">
+                <div class="md:col-span-2 glass p-6 rounded-[2rem] space-y-4">
+                    <h2 class="text-xl font-black uppercase italic border-b border-white/5 pb-2">Nova Proposta</h2>
+                    <form onsubmit="event.preventDefault(); submitFeedback();" class="space-y-4">
+                        <input type="text" id="userName" required class="input-field" placeholder="Seu Nome">
+                        <input type="text" id="userSector" required class="input-field" placeholder="Departamento">
+                        <input type="text" id="userProdLine" required class="input-field" placeholder="Linha de Produção">
+                        <textarea id="userText" required rows="4" class="input-field resize-none" placeholder="Descreva sua ideia técnica de forma clara..."></textarea>
+                        <button id="submitBtn" class="w-full bg-red-600 py-4 rounded-xl font-black uppercase italic tracking-tighter hover:bg-red-700 transition-all">Enviar Proposta</button>
+                    </form>
+                </div>
+                <div class="md:col-span-3 space-y-4">
+                    <div class="flex items-center justify-between px-2">
+                        <button onclick="loginAdmin()" id="suggestionsHeader" class="text-sm font-bold uppercase italic text-gray-500 admin-btn">Sugestões de Melhorias</button>
+                        <span id="adminIndicator" class="hidden text-[8px] font-black text-red-600 uppercase tracking-widest">Painel Admin Ativo</span>
+                    </div>
+                    <div id="suggestionsList" class="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar italic text-xs text-gray-600">Sincronizando banco de dados...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2ª PÁGINA: SOMOS VRZ -->
+        <section id="page-about" class="page-content space-y-12">
+            <div class="text-center space-y-4">
+                <h1 class="text-4xl md:text-7xl font-black italic uppercase leading-none">Somos <span class="text-red-600">VRZ</span></h1>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+                <div class="space-y-6">
+                    <div class="glass p-6 md:p-8 rounded-[2rem] border border-white/5 space-y-4">
+                        <h2 class="text-xl md:text-2xl font-black uppercase italic text-red-600">Nossa História</h2>
+                        <div class="text-gray-400 text-xs md:text-sm leading-relaxed italic font-light space-y-4">
+                            <p>Fundada sob os pilares da precisão técnica e segurança absoluta, a VRZ Blindados consolidou-se como autoridade máxima em blindagem no Brasil. Nossa trajetória é pautada pelo compromisso inabalável de unir proteção de alto impacto à integridade dinâmica de cada veículo.</p>
+                            <p>Com operação numa planta industrial de alta tecnologia em São Bernardo do Campo. Não apenas reforçamos veículos; blindamos a tranquilidade de famílias e executivos, garantindo que a sofisticação e o prazer de conduzir permaneçam inalterados.</p>
+                        </div>
+                    </div>
+                    <div class="glass p-6 md:p-8 rounded-[2rem] border border-white/5 space-y-4">
+                        <h2 class="text-lg font-black uppercase italic text-white flex items-center gap-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            Onde Estamos
+                        </h2>
+                        <p class="text-gray-400 text-xs italic leading-loose font-mono">R. Oneda, 615 - Planalto<br>São Bernardo do Campo - SP<br>CEP: 09895-280</p>
+                        <div class="flex gap-4">
+                            <a href="https://www.linkedin.com/company/vrz-blindados/" target="_blank" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-[9px] font-black uppercase transition-all hover:scale-105">LinkedIn</a>
+                            <a href="https://www.instagram.com/vrzblindados/" target="_blank" class="bg-red-600 text-white px-4 py-2 rounded-xl text-[9px] font-black uppercase transition-all hover:scale-105">Instagram</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="glass p-6 md:p-8 rounded-[2rem] border border-white/5 space-y-6 overflow-hidden">
+                        <h2 class="text-xl font-black uppercase italic text-white">Destaques</h2>
+                        <div class="carousel-container custom-scrollbar">
+                            <div class="carousel-item rounded-xl border border-white/10 overflow-hidden aspect-[9/16] bg-black">
+                                <video autoplay muted loop playsinline class="w-full h-full object-cover"><source src="video1.mp4.mp4" type="video/mp4"></video>
+                            </div>
+                            <div class="carousel-item rounded-xl border border-white/10 overflow-hidden aspect-[9/16] bg-black">
+                                <video autoplay muted loop playsinline class="w-full h-full object-cover"><source src="video2.mp4.mp4" type="video/mp4"></video>
+                            </div>
+                            <div class="carousel-item rounded-xl border border-white/10 overflow-hidden aspect-[9/16] bg-black">
+                                <video autoplay muted loop playsinline class="w-full h-full object-cover"><source src="video3.mp4.mp4" type="video/mp4"></video>
+                            </div>
+                            <div class="carousel-item rounded-xl border border-white/10 overflow-hidden aspect-[9/16] bg-black">
+                                <img src="video4.mp3.jpg" class="w-full h-full object-cover" alt="VRZ Highlight">
+                            </div>
+                        </div>
+                        <p class="text-[8px] text-gray-600 italic text-center uppercase tracking-widest">Rigor técnico e excelência em cada detalhe.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3ª PÁGINA: SEGURANÇA -->
+        <section id="page-security" class="page-content space-y-10 md:space-y-16">
             <div class="text-center space-y-4">
                 <h1 class="text-3xl md:text-6xl font-black italic uppercase leading-tight">Blindamos com princípios, entregamos com <span class="text-red-600">confiança</span></h1>
                 <p class="text-gray-500 max-w-2xl mx-auto text-xs md:sm italic px-4">Proteção absoluta e excelência técnica para o que você mais valoriza.</p>
@@ -106,12 +184,12 @@
                     <p class="text-gray-400 text-xs md:text-sm leading-relaxed italic font-light">Oferecer blindagem automotiva de excelência no Brasil, aliando tecnologia, segurança e preservação do design original, superando expectativas e transmitindo valor agregado em cada entrega.</p>
                 </div>
                 <div class="glass p-6 md:p-8 rounded-3xl border-t border-white/10">
-                    <div class="icon-box" style="background: #222;"><svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle stroke-width="2" cx="12" cy="12" r="10"/><path stroke-width="2" d="M22 12h-4M2 12h4M12 2v4M12 22v-4"/></svg></div>
+                    <div class="icon-box" style="background: #222;"><svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle stroke-width="2" cx="12" cy="12" r="10"/><path d="M22 12h-4M2 12h4M12 2v4M12 22v-4"/></svg></div>
                     <h3 class="text-lg font-black uppercase italic mb-3 text-white">Visão</h3>
                     <p class="text-gray-400 text-xs md:text-sm leading-relaxed italic font-light">Ser reconhecida como a melhor empresa de blindagem automotiva premium do país, pela qualidade, inovação e responsabilidade social e ambiental, atendendo de forma personalizada às necessidades de clientes exigentes.</p>
                 </div>
                 <div class="glass p-6 md:p-8 rounded-3xl border-t border-white/10">
-                    <div class="icon-box" style="background: #222;"><svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0l-.77.78-.77-.78a5.4 5.4 0 0 0-7.65 7.65l.77.78L12 20.24l7.23-7.23.77-.78a5.4 5.4 0 0 0 0-7.65z"/></svg></div>
+                    <div class="icon-box" style="background: #222;"><svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0l-.77.78-.77-.78a5.4 5.4 0 0 0-7.65 7.65l.77.78L12 20.24l7.23-7.23.77-.78a5.4 5.4 0 0 0 0-7.65z"/></svg></div>
                     <h3 class="text-lg font-black uppercase italic mb-3 text-white">Valores</h3>
                     <p class="text-gray-300 text-[10px] uppercase font-bold leading-tight mb-4">Como empresa de blindagem automotiva, valorizamos a vida acima de tudo. Respeitamos e cuidamos de tudo que envolve proporcionar a melhor experiência para todos que são tocados pela VRZ.</p>
                     <div class="space-y-2 text-[10px] text-gray-400 italic">
@@ -151,111 +229,66 @@
             </div>
         </section>
 
-        <!-- PÁGINA: PORTFÓLIO -->
+        <!-- 4ª PÁGINA: PORTFÓLIO -->
         <section id="page-portfolio" class="page-content space-y-12">
             <h1 class="text-4xl md:text-7xl font-black italic uppercase text-red-600 text-center">Portfólio VRZ</h1>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div class="car-card p-6 md:p-8 rounded-[2rem] flex flex-col min-h-[280px]" onclick="analyzeModel('Jeep Commander')">
-                    <div class="flex-1 space-y-3"><span class="tech-badge">SUV Executivo</span><h3 class="text-2xl font-black uppercase italic">Jeep Commander</h3><p class="text-[10px] text-gray-500 italic">Otimização acústica superior e blindagem perimetral estendida.</p></div>
-                    <div class="pt-6 flex justify-between items-center text-[9px] font-bold text-blue-400 uppercase">Análise ✨ <span class="text-red-600">→</span></div>
+                    <div class="flex-1 space-y-3">
+                        <span class="tech-badge">SUV Executivo</span>
+                        <h3 class="text-2xl font-black uppercase italic">Jeep Commander</h3>
+                        <p class="text-[10px] text-gray-500 italic leading-tight">Otimização acústica superior e blindagem perimetral estendida para conforto de longa distância.</p>
+                    </div>
+                    <div class="pt-6 flex justify-between items-center text-[9px] font-bold text-blue-400 uppercase">Análise de Engenharia ✨ <span class="text-red-600">→</span></div>
                 </div>
                 <div class="car-card p-6 md:p-8 rounded-[2rem] flex flex-col min-h-[280px]" onclick="analyzeModel('BMW X5')">
-                    <div class="flex-1 space-y-3"><span class="tech-badge">Luxury Sport</span><h3 class="text-2xl font-black uppercase italic">BMW X5</h3><p class="text-[10px] text-gray-500 italic">Integração ADAS completa e dinâmica esportiva preservada.</p></div>
-                    <div class="pt-6 flex justify-between items-center text-[9px] font-bold text-blue-400 uppercase">Análise ✨ <span class="text-red-600">→</span></div>
+                    <div class="flex-1 space-y-3">
+                        <span class="tech-badge">Luxury Sport</span>
+                        <h3 class="text-2xl font-black uppercase italic">BMW X5</h3>
+                        <p class="text-[10px] text-gray-500 italic leading-tight">Integração ADAS completa e dinâmica esportiva preservada.</p>
+                    </div>
+                    <div class="pt-6 flex justify-between items-center text-[9px] font-bold text-blue-400 uppercase">Análise de Engenharia ✨ <span class="text-red-600">→</span></div>
                 </div>
                 <div class="car-card p-6 md:p-8 rounded-[2rem] flex flex-col min-h-[280px]" onclick="analyzeModel('Toyota SW4')">
-                    <div class="flex-1 space-y-3"><span class="tech-badge">Off-Road</span><h3 class="text-2xl font-black uppercase italic">Toyota SW4</h3><p class="text-[10px] text-gray-500 italic">Proteção estratégica para terrenos severos e durabilidade extrema.</p></div>
-                    <div class="pt-6 flex justify-between items-center text-[9px] font-bold text-blue-400 uppercase">Análise ✨ <span class="text-red-600">→</span></div>
+                    <div class="flex-1 space-y-3">
+                        <span class="tech-badge">Off-Road Robust</span>
+                        <h3 class="text-2xl font-black uppercase italic">Toyota SW4</h3>
+                        <p class="text-[10px] text-gray-500 italic leading-tight">Blindagem focada em durabilidade extrema em terrenos severos.</p>
+                    </div>
+                    <div class="pt-6 flex justify-between items-center text-[9px] font-bold text-blue-400 uppercase">Análise de Engenharia ✨ <span class="text-red-600">→</span></div>
                 </div>
                 <div class="car-card p-6 md:p-8 rounded-[2rem] flex flex-col min-h-[280px]" onclick="analyzeModel('Audi Q8')">
-                    <div class="flex-1 space-y-3"><span class="tech-badge">Tech Excellence</span><h3 class="text-2xl font-black uppercase italic">Audi Q8</h3><p class="text-[10px] text-gray-500 italic">Vanguarda tecnológica e perfeição nos vidros curvos.</p></div>
-                    <div class="pt-6 flex justify-between items-center text-[9px] font-bold text-blue-400 uppercase">Análise ✨ <span class="text-red-600">→</span></div>
+                    <div class="flex-1 space-y-3">
+                        <span class="tech-badge">Tech Excellence</span>
+                        <h3 class="text-2xl font-black uppercase italic">Audi Q8</h3>
+                        <p class="text-[10px] text-gray-500 italic leading-tight">Vanguarda tecnológica e integração de vidros curvos com perfeição balística.</p>
+                    </div>
+                    <div class="pt-6 flex justify-between items-center text-[9px] font-bold text-blue-400 uppercase">Análise de Engenharia ✨ <span class="text-red-600">→</span></div>
                 </div>
-                <div class="car-card p-6 md:p-8 rounded-[2rem] flex flex-col min-h-[280px]" onclick="analyzeModel('Mercedes G63')">
-                    <div class="flex-1 space-y-3"><span class="tech-badge">G-Wagon Elite</span><h3 class="text-2xl font-black uppercase italic">Mercedes G63</h3><p class="text-[10px] text-gray-500 italic">Rigor balístico total no ícone da robustez mundial.</p></div>
-                    <div class="pt-6 flex justify-between items-center text-[9px] font-bold text-blue-400 uppercase">Análise ✨ <span class="text-red-600">→</span></div>
+                <div class="car-card p-6 md:p-8 rounded-[2rem] flex flex-col min-h-[280px]" onclick="analyzeModel('Mercedes G63 AMG')">
+                    <div class="flex-1 space-y-3">
+                        <span class="tech-badge">G-Wagon Elite</span>
+                        <h3 class="text-2xl font-black uppercase italic">Mercedes G63</h3>
+                        <p class="text-[10px] text-gray-500 italic leading-tight">Rigor balístico total no ícone da robustez mundial.</p>
+                    </div>
+                    <div class="pt-6 flex justify-between items-center text-[9px] font-bold text-blue-400 uppercase">Análise de Engenharia ✨ <span class="text-red-600">→</span></div>
                 </div>
                 <div class="car-card p-6 md:p-8 rounded-[2rem] flex flex-col min-h-[280px]" onclick="analyzeModel('Range Rover Sport')">
-                    <div class="flex-1 space-y-3"><span class="tech-badge">Ultimate Luxury</span><h3 class="text-2xl font-black uppercase italic">Rover Sport</h3><p class="text-[10px] text-gray-500 italic">O ápice do luxo com acabamento artesanal VRZ.</p></div>
-                    <div class="pt-6 flex justify-between items-center text-[9px] font-bold text-blue-400 uppercase">Análise ✨ <span class="text-red-600">→</span></div>
+                    <div class="flex-1 space-y-3">
+                        <span class="tech-badge">Ultimate Luxury</span>
+                        <h3 class="text-2xl font-black uppercase italic">Rover Sport</h3>
+                        <p class="text-[10px] text-gray-500 italic leading-tight">O ápice do luxo fora de estrada com acabamento artesanal VRZ.</p>
+                    </div>
+                    <div class="pt-6 flex justify-between items-center text-[9px] font-bold text-blue-400 uppercase">Análise de Engenharia ✨ <span class="text-red-600">→</span></div>
                 </div>
             </div>
             <div id="aiAnalysisResult" class="hidden glass p-6 md:p-10 rounded-[2rem] border border-blue-500/20 mt-8">
-                <div id="analysisContent" class="text-gray-400 text-xs md:text-sm italic leading-relaxed whitespace-pre-wrap font-light"></div>
-                <button onclick="this.parentElement.classList.add('hidden')" class="mt-6 text-[10px] font-black uppercase text-gray-500 hover:text-red-600">Fechar Análise</button>
-            </div>
-        </section>
-
-        <!-- PÁGINA: SUGESTÕES -->
-        <section id="page-suggestions" class="page-content space-y-10">
-            <h1 class="text-4xl font-black italic uppercase text-center">Canal de <span class="text-red-600">Inovação</span></h1>
-            <div class="grid grid-cols-1 md:grid-cols-5 gap-8">
-                <div class="md:col-span-2 glass p-6 rounded-[2rem] space-y-4">
-                    <h2 class="text-xl font-black uppercase italic border-b border-white/5 pb-2">Nova Proposta</h2>
-                    <form onsubmit="event.preventDefault(); submitFeedback();" class="space-y-4">
-                        <input type="text" id="userName" required class="input-field" placeholder="Nome">
-                        <input type="text" id="userSector" required class="input-field" placeholder="Setor">
-                        <input type="text" id="userProdLine" required class="input-field" placeholder="Linha">
-                        <textarea id="userText" required rows="4" class="input-field resize-none" placeholder="Sua ideia..."></textarea>
-                        <button id="submitBtn" class="w-full bg-red-600 py-4 rounded-xl font-black uppercase italic tracking-tighter">Enviar</button>
-                    </form>
-                </div>
-                <div class="md:col-span-3 space-y-4">
-                    <div class="flex items-center justify-between px-2">
-                        <button onclick="loginAdmin()" id="suggestionsHeader" class="text-sm font-bold uppercase italic text-gray-500 admin-btn">Sugestões de Melhorias</button>
-                        <span id="adminIndicator" class="hidden text-[8px] font-black text-red-600 uppercase tracking-widest">Painel Admin Ativo</span>
-                    </div>
-                    <div id="suggestionsList" class="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar italic text-xs text-gray-600">Sincronizando...</div>
-                </div>
-            </div>
-        </section>
-
-        <!-- PÁGINA: SOMOS VRZ -->
-        <section id="page-about" class="page-content space-y-12">
-            <div class="text-center space-y-4">
-                <h1 class="text-4xl md:text-7xl font-black italic uppercase leading-none">Somos <span class="text-red-600">VRZ</span></h1>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
-                <div class="space-y-6">
-                    <div class="glass p-6 md:p-8 rounded-[2rem] border border-white/5 space-y-4">
-                        <h2 class="text-xl md:text-2xl font-black uppercase italic text-red-600">Nossa História</h2>
-                        <div class="text-gray-400 text-xs md:text-sm leading-relaxed italic font-light space-y-4">
-                            <p>Fundada sob os pilares da precisão técnica e segurança absoluta, a VRZ Blindados consolidou-se como autoridade máxima em blindagem no Brasil. Nossa trajetória é pautada pelo compromisso inabalável de unir proteção de alto impacto à integridade dinâmica de cada veículo.</p>
-                            <p>Com operação numa planta industrial de alta tecnologia em São Bernardo do Campo. Não apenas reforçamos veículos; blindamos a tranquilidade de famílias e executivos, garantindo que a sofisticação e o prazer de conduzir permaneçam inalterados.</p>
-                        </div>
-                    </div>
-                    <div class="glass p-6 md:p-8 rounded-[2rem] border border-white/5 space-y-4">
-                        <h2 class="text-lg font-black uppercase italic text-white flex items-center gap-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                            Onde Estamos
-                        </h2>
-                        <p class="text-gray-400 text-xs italic leading-loose font-mono">R. Oneda, 615 - Planalto, SBC - SP, 09895-280</p>
-                        <div class="flex gap-4">
-                            <a href="https://www.linkedin.com/company/vrz-blindados/" target="_blank" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-[9px] font-black uppercase">LinkedIn</a>
-                            <a href="https://www.instagram.com/vrzblindados/" target="_blank" class="bg-red-600 text-white px-4 py-2 rounded-xl text-[9px] font-black uppercase">Instagram</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="space-y-6">
-                    <div class="glass p-6 md:p-8 rounded-[2rem] border border-white/5 space-y-6 overflow-hidden">
-                        <h2 class="text-xl font-black uppercase italic text-white">Destaques</h2>
-                        <div class="carousel-container custom-scrollbar">
-                            <div class="carousel-item rounded-xl border border-white/10 overflow-hidden aspect-[9/16] bg-black">
-                                <video autoplay muted loop playsinline class="w-full h-full object-cover"><source src="video1.mp4.mp4" type="video/mp4"></video>
-                            </div>
-                            <div class="carousel-item rounded-xl border border-white/10 overflow-hidden aspect-[9/16] bg-black">
-                                <video autoplay muted loop playsinline class="w-full h-full object-cover"><source src="video2.mp4.mp4" type="video/mp4"></video>
-                            </div>
-                            <div class="carousel-item rounded-xl border border-white/10 overflow-hidden aspect-[9/16] bg-black">
-                                <video autoplay muted loop playsinline class="w-full h-full object-cover"><source src="video3.mp4.mp4" type="video/mp4"></video>
-                            </div>
-                            <div class="carousel-item rounded-xl border border-white/10 overflow-hidden aspect-[9/16] bg-black">
-                                <img src="video4.mp3.jpg" class="w-full h-full object-cover" alt="VRZ Highlight">
-                            </div>
-                        </div>
-                        <p class="text-[8px] text-gray-600 italic text-center uppercase tracking-widest">Rigor técnico em cada detalhe de produção.</p>
+                <div class="flex items-start gap-4">
+                    <div class="text-2xl">✨</div>
+                    <div class="flex-1">
+                        <h3 class="text-lg font-black uppercase italic mb-4">Relatório Técnico de Engenharia</h3>
+                        <div id="analysisContent" class="text-gray-400 text-xs md:text-sm italic leading-relaxed whitespace-pre-wrap font-light"></div>
+                        <button onclick="this.parentElement.parentElement.parentElement.classList.add('hidden')" class="mt-6 text-[10px] font-black uppercase text-gray-500 hover:text-red-600 transition-all">Fechar Análise</button>
                     </div>
                 </div>
             </div>
@@ -263,7 +296,7 @@
     </main>
 
     <footer class="p-8 border-t border-gray-900 text-center">
-        <a href="https://www.vrzblindados.com.br/" target="_blank" class="text-gray-800 text-[8px] uppercase tracking-[0.8em] font-black">www.vrzblindados.com.br</a>
+        <a href="https://www.vrzblindados.com.br/" target="_blank" class="text-gray-800 text-[8px] uppercase tracking-[0.6em] font-black hover:text-red-600 transition-colors">www.vrzblindados.com.br</a>
     </footer>
 
     <script type="module">
@@ -306,7 +339,7 @@
         };
 
         window.loginAdmin = () => {
-            const pass = prompt("Senha Administrativa:");
+            const pass = prompt("Acesso Administrativo:");
             if (pass === "VRZ2024") {
                 isAdmin = true;
                 document.getElementById('adminIndicator').classList.remove('hidden');
@@ -316,14 +349,14 @@
 
         window.deleteSuggestion = async (id) => {
             if(!isAdmin) return;
-            if(confirm("Deseja excluir esta ideia definitivamente?")) {
+            if(confirm("Deseja excluir definitivamente?")) {
                 try { await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'suggestions', id)); } catch(e) { console.error(e); }
             }
         };
 
         window.replySuggestion = async (id) => {
             if(!isAdmin) return;
-            const reply = prompt("Comentário Oficial VRZ:");
+            const reply = prompt("Resposta Oficial VRZ:");
             if(reply) {
                 try { await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'suggestions', id), { adminReply: reply }); } catch(e) { console.error(e); }
             }
@@ -333,9 +366,11 @@
             document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
             document.querySelectorAll('.mobile-nav div').forEach(d => d.classList.replace('bg-red-600', 'bg-transparent'));
+            
             document.getElementById(`page-${id}`)?.classList.add('active');
             document.getElementById(`nav-${id}`)?.classList.add('active');
             document.getElementById(`m-nav-${id}`)?.classList.replace('bg-transparent', 'bg-red-600');
+            
             window.scrollTo({top: 0, behavior: 'smooth'});
         };
 
@@ -350,7 +385,7 @@
                 if(docs.length === 0) { list.innerHTML = '<div class="text-center py-10 opacity-20 italic">Aguardando novas ideias...</div>'; return; }
                 docs.forEach(data => {
                     const div = document.createElement('div');
-                    div.className = 'glass p-4 rounded-2xl suggestion-card space-y-2';
+                    div.className = 'glass p-4 rounded-2xl suggestion-card space-y-2 mb-4';
                     const adminTools = isAdmin ? `
                         <div class="flex gap-4 mt-2 pt-2 border-t border-white/5">
                             <button onclick="replySuggestion('${data.id}')" class="text-[7px] text-blue-500 font-black uppercase">Responder</button>
