@@ -23,6 +23,8 @@
         .icon-box { background: linear-gradient(135deg, #dc2626 0%, #7f1d1d 100%); width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 12px; margin-bottom: 20px; }
         
         .input-field { width: 100%; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 14px; font-size: 13px; color: white; outline: none; transition: all 0.3s; }
+        .input-field:focus { border-color: #dc2626; background: rgba(255,255,255,0.05); }
+        .input-field:disabled { opacity: 0.3; cursor: not-allowed; }
         .suggestion-card { border-left: 3px solid #dc2626; transition: all 0.3s; }
         
         .carousel-container { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 10px; }
@@ -91,19 +93,56 @@
                 <div class="md:col-span-2 glass p-6 rounded-[2rem] space-y-4">
                     <h2 class="text-xl font-black uppercase italic border-b border-white/5 pb-2">Nova Proposta</h2>
                     <form id="feedbackForm" class="space-y-4">
+                        <div class="flex items-center justify-between px-2 mb-4 bg-white/5 p-3 rounded-xl border border-white/5">
+                            <span class="text-[10px] uppercase font-bold text-gray-400">Modo de Identificação</span>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="isAnonymous" class="sr-only peer">
+                                <div class="w-10 h-5 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-600"></div>
+                                <span class="ml-2 text-[10px] uppercase font-bold text-gray-400">Anônimo</span>
+                            </label>
+                        </div>
+                        
                         <input type="text" id="userName" required class="input-field" placeholder="Seu Nome">
                         <input type="text" id="userSector" required class="input-field" placeholder="Departamento">
                         <input type="text" id="userProdLine" class="input-field" placeholder="Linha de Produção (Opcional)">
                         <textarea id="userText" required rows="4" class="input-field resize-none" placeholder="Descreva sua ideia de forma clara..."></textarea>
+                        
+                        <!-- Melhoria: Anexo de Arquivos -->
+                        <div class="px-2 space-y-2">
+                            <label class="block text-[9px] font-black uppercase text-gray-500 tracking-widest">Anexar Documento ou Imagem</label>
+                            <div class="flex items-center gap-3">
+                                <button type="button" onclick="document.getElementById('userFile').click()" class="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 px-4 py-3 rounded-xl transition-all group">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-400 group-hover:text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" /></svg>
+                                    <span id="fileNameDisplay" class="text-[11px] text-gray-400 uppercase font-bold truncate max-w-[120px]">Selecionar Arquivo</span>
+                                </button>
+                                <input type="file" id="userFile" class="hidden" onchange="handleFileSelect(this)">
+                                <button type="button" id="btnRemoveFile" class="hidden text-red-600 opacity-50 hover:opacity-100" onclick="removeSelectedFile()">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                                </button>
+                            </div>
+                        </div>
+
                         <button type="submit" id="submitBtn" class="w-full bg-red-600 py-4 rounded-xl font-black uppercase italic tracking-tighter hover:bg-red-700 transition-all">Enviar Proposta</button>
                     </form>
                 </div>
                 <div class="md:col-span-3 space-y-4">
-                    <div class="flex items-center justify-between px-2">
-                        <button onclick="loginAdmin()" id="suggestionsHeader" class="text-sm font-bold uppercase italic text-gray-500 admin-btn">Sugestões de Melhorias</button>
-                        <span id="adminIndicator" class="hidden text-[8px] font-black text-red-600 uppercase tracking-widest">Painel Admin Ativo</span>
+                    <div class="flex flex-col gap-4">
+                        <div class="flex items-center justify-between px-2">
+                            <button onclick="loginAdmin()" id="suggestionsHeader" class="text-sm font-bold uppercase italic text-gray-500 admin-btn">Área Restrita</button>
+                            <span id="adminIndicator" class="hidden text-[8px] font-black text-red-600 uppercase tracking-widest">Acesso Administrador</span>
+                        </div>
+                        
+                        <div id="protocolSearchContainer" class="px-2">
+                            <div class="relative">
+                                <input type="text" id="protocolInput" class="input-field !py-3 !text-[11px] uppercase" placeholder="Digite seu protocolo para acompanhar (Ex: VRZ-XXXX)">
+                                <button id="btnSearchProtocol" class="absolute right-2 top-1/2 -translate-y-1/2 text-[9px] font-black text-red-600 uppercase tracking-widest px-3">Buscar</button>
+                            </div>
+                        </div>
+
+                        <div id="suggestionsList" class="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar italic text-xs text-gray-600">
+                            <div class="text-center py-10 opacity-30 italic">Insira seu protocolo acima ou faça login como administrador.</div>
+                        </div>
                     </div>
-                    <div id="suggestionsList" class="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar italic text-xs text-gray-600">Sincronizando banco de dados...</div>
                 </div>
             </div>
         </section>
@@ -163,24 +202,14 @@
                     <div class="glass p-6 md:p-8 rounded-[2rem] border border-white/5 space-y-6 overflow-hidden">
                         <h2 class="text-xl font-black uppercase italic text-white">Destaques</h2>
                         <div class="carousel-container custom-scrollbar">
-                            <!-- Atualização dos vídeos e imagem conforme nomes do GitHub -->
-                            <div class="carousel-item rounded-xl border border-white/10 overflow-hidden aspect-[9/16] bg-black">
-                                <video autoplay muted loop playsinline class="w-full h-full object-cover">
-                                    <source src="video1.mp4.mp4" type="video/mp4">
-                                </video>
+                            <div class="carousel-item rounded-xl border border-white/10 overflow-hidden aspect-[9/16] bg-neutral-900 flex items-center justify-center">
+                                <span class="text-[10px] text-gray-700 uppercase font-black">Mídia VRZ #1</span>
                             </div>
-                            <div class="carousel-item rounded-xl border border-white/10 overflow-hidden aspect-[9/16] bg-black">
-                                <video autoplay muted loop playsinline class="w-full h-full object-cover">
-                                    <source src="video2.mp4.mp4" type="video/mp4">
-                                </video>
+                            <div class="carousel-item rounded-xl border border-white/10 overflow-hidden aspect-[9/16] bg-neutral-900 flex items-center justify-center">
+                                <span class="text-[10px] text-gray-700 uppercase font-black">Mídia VRZ #2</span>
                             </div>
-                            <div class="carousel-item rounded-xl border border-white/10 overflow-hidden aspect-[9/16] bg-black">
-                                <video autoplay muted loop playsinline class="w-full h-full object-cover">
-                                    <source src="video3.mp4.mp4" type="video/mp4">
-                                </video>
-                            </div>
-                            <div class="carousel-item rounded-xl border border-white/10 overflow-hidden aspect-[9/16] bg-black">
-                                <img src="video4.mp3.jpg" class="w-full h-full object-cover" alt="Destaque VRZ">
+                            <div class="carousel-item rounded-xl border border-white/10 overflow-hidden aspect-[9/16] bg-neutral-900 flex items-center justify-center">
+                                <span class="text-[10px] text-gray-700 uppercase font-black">Mídia VRZ #3</span>
                             </div>
                         </div>
                         <p class="text-[8px] text-gray-600 italic text-center uppercase tracking-widest">Rigor técnico e excelência em cada detalhe.</p>
@@ -209,7 +238,7 @@
         };
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'vrz-portal-v2';
 
-        let auth, db, user = null, isAdmin = false;
+        let auth, db, user = null, isAdmin = false, currentSearchProtocol = "";
 
         const init = async () => {
             try {
@@ -226,13 +255,12 @@
                 onAuthStateChanged(auth, (u) => {
                     user = u;
                     if (user) {
-                        document.getElementById('userIdDisplay').innerText = "VRZ-SECURE";
+                        document.getElementById('userIdDisplay').innerText = "SESSÃO SEGURA";
                         document.getElementById('userIdDisplay').className = "text-green-500 italic uppercase";
                         loadSuggestions();
                     }
                 });
             } catch (e) {
-                console.error("Initialization Error:", e);
                 showModal("Erro de Conexão", "Não foi possível conectar aos servidores VRZ.");
             } finally {
                 setTimeout(() => {
@@ -250,12 +278,8 @@
         window.showPage = (id) => {
             document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            document.querySelectorAll('.mobile-nav div').forEach(d => d.classList.replace('bg-red-600', 'bg-transparent'));
-            
             document.getElementById(`page-${id}`)?.classList.add('active');
             document.getElementById(`nav-${id}`)?.classList.add('active');
-            document.getElementById(`m-nav-${id}`)?.classList.replace('bg-transparent', 'bg-red-600');
-            
             window.scrollTo({top: 0, behavior: 'smooth'});
         };
 
@@ -265,21 +289,16 @@
             document.getElementById('modal-text').innerText = text;
             const actions = document.getElementById('modal-actions');
             actions.innerHTML = '';
-
             const closeBtn = document.createElement('button');
             closeBtn.className = "bg-gray-800 px-6 py-2 rounded-lg text-xs font-bold uppercase";
             closeBtn.innerText = confirmCallback ? "Cancelar" : "Fechar";
             closeBtn.onclick = () => modal.style.display = 'none';
             actions.appendChild(closeBtn);
-
             if (confirmCallback) {
                 const confirmBtn = document.createElement('button');
                 confirmBtn.className = "bg-red-600 px-6 py-2 rounded-lg text-xs font-bold uppercase";
                 confirmBtn.innerText = "Confirmar";
-                confirmBtn.onclick = () => {
-                    confirmCallback();
-                    modal.style.display = 'none';
-                };
+                confirmBtn.onclick = () => { confirmCallback(); modal.style.display = 'none'; };
                 actions.appendChild(confirmBtn);
             }
             modal.style.display = 'flex';
@@ -290,8 +309,53 @@
             if (pass === "VRZ2024") {
                 isAdmin = true;
                 document.getElementById('adminIndicator').classList.remove('hidden');
+                document.getElementById('protocolSearchContainer').classList.add('hidden');
                 loadSuggestions();
+            } else if (pass !== null) {
+                showModal("Erro", "Chave incorreta.");
             }
+        };
+
+        // Melhoria: Lógica de Arquivos
+        window.handleFileSelect = (input) => {
+            const display = document.getElementById('fileNameDisplay');
+            const removeBtn = document.getElementById('btnRemoveFile');
+            if (input.files && input.files[0]) {
+                display.innerText = input.files[0].name;
+                removeBtn.classList.remove('hidden');
+            }
+        };
+
+        window.removeSelectedFile = () => {
+            const input = document.getElementById('userFile');
+            const display = document.getElementById('fileNameDisplay');
+            const removeBtn = document.getElementById('btnRemoveFile');
+            input.value = "";
+            display.innerText = "Selecionar Arquivo";
+            removeBtn.classList.add('hidden');
+        };
+
+        document.getElementById('isAnonymous').onchange = (e) => {
+            const nameInput = document.getElementById('userName');
+            if(e.target.checked) {
+                nameInput.value = "";
+                nameInput.disabled = true;
+                nameInput.required = false;
+                nameInput.placeholder = "Modo Anônimo Ativado";
+            } else {
+                nameInput.disabled = false;
+                nameInput.required = true;
+                nameInput.placeholder = "Seu Nome";
+            }
+        };
+
+        document.getElementById('btnSearchProtocol').onclick = () => {
+            currentSearchProtocol = document.getElementById('protocolInput').value.trim().toUpperCase();
+            loadSuggestions();
+        };
+
+        const generateProtocol = () => {
+            return 'VRZ-' + Math.random().toString(36).substring(2, 8).toUpperCase();
         };
 
         const loadSuggestions = () => {
@@ -304,10 +368,21 @@
                 list.innerHTML = '';
                 
                 const docs = snap.docs.map(d => ({id: d.id, ...d.data()}))
+                    .filter(data => {
+                        if (isAdmin) return true;
+                        if (currentSearchProtocol && data.protocol === currentSearchProtocol) return true;
+                        return false;
+                    })
                     .sort((a,b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
 
                 if(docs.length === 0) {
-                    list.innerHTML = '<div class="text-center py-10 opacity-20 italic">Aguardando novas ideias...</div>';
+                    if (isAdmin) {
+                        list.innerHTML = '<div class="text-center py-10 opacity-20 italic">Aguardando novas ideias...</div>';
+                    } else if (currentSearchProtocol) {
+                        list.innerHTML = '<div class="text-center py-10 opacity-20 italic">Protocolo não encontrado ou ainda não processado.</div>';
+                    } else {
+                        list.innerHTML = '<div class="text-center py-10 opacity-30 italic font-bold">INSIRA SEU PROTOCOLO PARA ACOMPANHAR SUA IDEIA.</div>';
+                    }
                     return;
                 }
 
@@ -329,12 +404,23 @@
                         </div>
                     ` : '';
 
+                    const fileUI = data.attachmentName ? `
+                        <div class="flex items-center gap-2 bg-white/5 p-2 rounded-lg mt-2 border border-white/5">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" /></svg>
+                            <span class="text-[8px] text-gray-500 uppercase font-black truncate">${data.attachmentName}</span>
+                        </div>
+                    ` : '';
+
                     div.innerHTML = `
                         <div class="flex justify-between items-start">
-                            <span class="text-red-500 font-black uppercase text-[9px] tracking-widest">${data.name || 'Anônimo'}</span>
+                            <div class="flex flex-col">
+                                <span class="text-red-500 font-black uppercase text-[9px] tracking-widest">${data.name || 'Anônimo'}</span>
+                                <span class="text-[7px] text-gray-400 font-mono mt-1">PROTOCOLO: ${data.protocol || '---'}</span>
+                            </div>
                             <span class="text-[7px] text-gray-700">${data.sector || ''} • Linha: ${data.prodLine || '-'}</span>
                         </div>
                         <p class="text-gray-300 italic text-[11px] font-light">"${data.text || ''}"</p>
+                        ${fileUI}
                         ${replyUI}
                         ${adminTools}
                     `;
@@ -344,42 +430,61 @@
                 if(isAdmin) {
                     list.querySelectorAll('.btn-delete').forEach(btn => {
                         btn.onclick = () => {
-                            showModal("Confirmar Exclusão", "Deseja remover esta proposta?", async () => {
+                            showModal("Confirmar Exclusão", "Remover esta proposta?", async () => {
                                 try { await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'suggestions', btn.dataset.id)); } catch (e) { console.error(e); }
                             });
                         };
                     });
                     list.querySelectorAll('.btn-reply').forEach(btn => {
                         btn.onclick = () => {
-                            const r = prompt("Resposta Oficial:");
+                            const r = prompt("Resposta Oficial VRZ:");
                             if(r) { updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'suggestions', btn.dataset.id), { adminReply: r }); }
                         };
                     });
                 }
-            });
+            }, (err) => console.error(err));
         };
 
         document.getElementById('feedbackForm').onsubmit = async (e) => {
             e.preventDefault();
             if (!user || !db) return;
 
+            const protocol = generateProtocol();
+            const isAnon = document.getElementById('isAnonymous').checked;
+            const fileInput = document.getElementById('userFile');
             const btn = document.getElementById('submitBtn');
+            
             const data = {
-                name: document.getElementById('userName').value.trim(),
+                name: isAnon ? 'Anônimo' : document.getElementById('userName').value.trim(),
                 sector: document.getElementById('userSector').value.trim(),
                 prodLine: document.getElementById('userProdLine').value.trim(),
                 text: document.getElementById('userText').value.trim(),
-                timestamp: serverTimestamp()
+                protocol: protocol,
+                timestamp: serverTimestamp(),
+                attachmentName: fileInput.files[0] ? fileInput.files[0].name : null,
+                attachmentType: fileInput.files[0] ? fileInput.files[0].type : null
             };
 
             btn.disabled = true;
-            btn.innerText = "...";
+            btn.innerText = "ENVIANDO...";
 
             try {
                 await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'suggestions'), data);
+                
+                // Reset form
                 document.getElementById('userText').value = '';
+                document.getElementById('userName').value = '';
+                removeSelectedFile();
+                
+                showModal("Proposta Recebida!", `Sua ideia foi registrada. ANOTE SEU PROTOCOLO PARA ACOMPANHAR: ${protocol}`);
+                
                 btn.innerText = "ENVIADO!";
-                setTimeout(() => { btn.innerText = "Enviar Proposta"; btn.disabled = false; }, 3000);
+                btn.classList.replace('bg-red-600', 'bg-green-600');
+                setTimeout(() => { 
+                    btn.innerText = "Enviar Proposta"; 
+                    btn.disabled = false;
+                    btn.classList.replace('bg-green-600', 'bg-red-600');
+                }, 4000);
             } catch (err) {
                 btn.innerText = "ERRO";
                 btn.disabled = false;
