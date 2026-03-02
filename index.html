@@ -132,7 +132,11 @@
                     <div class="flex flex-col gap-4">
                         <div class="flex items-center justify-between px-2">
                             <button onclick="loginAdmin()" id="suggestionsHeader" class="text-sm font-bold uppercase italic text-gray-500 admin-btn">Área Restrita</button>
-                            <span id="adminIndicator" class="hidden text-[8px] font-black text-red-600 uppercase tracking-widest">Painel Administrativo VRZ</span>
+                            <!-- Botão Sair adicionado -->
+                            <div id="adminIndicator" class="hidden flex items-center gap-4">
+                                <span class="text-[8px] font-black text-red-600 uppercase tracking-widest">Painel Administrativo VRZ</span>
+                                <button onclick="logoutAdmin()" class="text-[8px] font-black text-white bg-red-600/20 hover:bg-red-600 px-2 py-1 rounded transition-all uppercase">Sair</button>
+                            </div>
                         </div>
                         
                         <div id="protocolSearchContainer" class="px-2">
@@ -354,16 +358,31 @@
         };
 
         window.loginAdmin = () => {
+            if (isAdmin) return;
             const pass = prompt("Chave de Acesso Administrativo:");
             if (pass === "VRZ2024") {
                 isAdmin = true;
                 document.getElementById('adminIndicator').classList.remove('hidden');
+                document.getElementById('suggestionsHeader').classList.add('hidden');
                 document.getElementById('protocolSearchContainer').classList.add('hidden');
                 document.getElementById('adminStats').classList.remove('hidden');
                 loadSuggestions();
             } else if (pass !== null) {
                 showModal("Erro", "Chave incorreta.");
             }
+        };
+
+        // Função para sair da área restrita sem recarregar
+        window.logoutAdmin = () => {
+            isAdmin = false;
+            document.getElementById('adminIndicator').classList.add('hidden');
+            document.getElementById('suggestionsHeader').classList.remove('hidden');
+            document.getElementById('protocolSearchContainer').classList.remove('hidden');
+            document.getElementById('adminStats').classList.add('hidden');
+            currentSearchProtocol = "";
+            document.getElementById('protocolInput').value = "";
+            loadSuggestions();
+            showModal("Sessão Encerrada", "Você saiu da área restrita com sucesso.");
         };
 
         window.handleFileSelect = (input) => {
