@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VRZ Blindados - Portal Oficial</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Bibliotecas para geração de PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #050505; color: #ffffff; overflow-x: hidden; margin: 0; padding-bottom: 80px; }
@@ -54,7 +58,7 @@
     <div id="custom-modal">
         <div class="modal-content">
             <h3 id="modal-title" class="text-xl font-black italic uppercase text-red-600 mb-4">Aviso</h3>
-            <p id="modal-text" class="text-sm text-gray-400 mb-6 italic"></p>
+            <div id="modal-text" class="text-sm text-gray-400 mb-6 italic"></div>
             <div id="modal-actions" class="flex gap-4 justify-center">
                 <button id="modal-close" class="bg-gray-800 px-6 py-2 rounded-lg text-xs font-bold uppercase">Fechar</button>
             </div>
@@ -107,7 +111,6 @@
                         <input type="text" id="userProdLine" class="input-field" placeholder="Linha de Produção (Opcional)">
                         <textarea id="userText" required rows="4" class="input-field resize-none" placeholder="Descreva sua ideia de forma clara..."></textarea>
                         
-                        <!-- Melhoria: Anexo de Arquivos -->
                         <div class="px-2 space-y-2">
                             <label class="block text-[9px] font-black uppercase text-gray-500 tracking-widest">Anexar Documento ou Imagem</label>
                             <div class="flex items-center gap-3">
@@ -129,7 +132,7 @@
                     <div class="flex flex-col gap-4">
                         <div class="flex items-center justify-between px-2">
                             <button onclick="loginAdmin()" id="suggestionsHeader" class="text-sm font-bold uppercase italic text-gray-500 admin-btn">Área Restrita</button>
-                            <span id="adminIndicator" class="hidden text-[8px] font-black text-red-600 uppercase tracking-widest">Acesso Administrador</span>
+                            <span id="adminIndicator" class="hidden text-[8px] font-black text-red-600 uppercase tracking-widest">Painel Administrativo VRZ</span>
                         </div>
                         
                         <div id="protocolSearchContainer" class="px-2">
@@ -139,7 +142,38 @@
                             </div>
                         </div>
 
-                        <div id="suggestionsList" class="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar italic text-xs text-gray-600">
+                        <!-- Área de Gráfico e Exportação (Apenas Admin) -->
+                        <div id="adminStats" class="hidden px-2 mb-4 space-y-4">
+                            <div class="glass p-4 rounded-2xl flex flex-col md:flex-row items-center gap-6">
+                                <div class="w-32 h-32">
+                                    <canvas id="statsChart"></canvas>
+                                </div>
+                                <div class="flex flex-col gap-2">
+                                    <h4 class="text-[10px] font-black uppercase text-gray-500 tracking-widest">Visão Geral</h4>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-2 h-2 rounded-full bg-red-600"></div>
+                                        <span class="text-[11px] font-bold">Aguardando: <span id="countPending">0</span></span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-2 h-2 rounded-full bg-green-600"></div>
+                                        <span class="text-[11px] font-bold">Respondidos: <span id="countAnswered">0</span></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="glass p-4 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4">
+                                <div class="flex flex-col gap-1">
+                                    <h4 class="text-[10px] font-black uppercase text-gray-500 tracking-widest">Exportar Relatório</h4>
+                                    <p class="text-[9px] text-gray-400 italic">Gere um PDF detalhado com o status das ideias por mês.</p>
+                                </div>
+                                <div class="flex items-center gap-2 w-full md:w-auto">
+                                    <input type="month" id="exportMonth" class="bg-black border border-white/10 rounded-lg px-3 py-2 text-[10px] uppercase font-bold outline-none">
+                                    <button id="btnExportPDF" class="bg-white/10 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-[9px] font-black uppercase transition-all whitespace-nowrap">Exportar PDF</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="suggestionsList" class="space-y-6 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar italic text-xs text-gray-600">
                             <div class="text-center py-10 opacity-30 italic">Insira seu protocolo acima ou faça login como administrador.</div>
                         </div>
                     </div>
@@ -201,15 +235,25 @@
                 <div class="space-y-6">
                     <div class="glass p-6 md:p-8 rounded-[2rem] border border-white/5 space-y-6 overflow-hidden">
                         <h2 class="text-xl font-black uppercase italic text-white">Destaques</h2>
+                        <!-- Melhoria: Referência aos arquivos do GitHub solicitados -->
                         <div class="carousel-container custom-scrollbar">
-                            <div class="carousel-item rounded-xl border border-white/10 overflow-hidden aspect-[9/16] bg-neutral-900 flex items-center justify-center">
-                                <span class="text-[10px] text-gray-700 uppercase font-black">Mídia VRZ #1</span>
+                            <div class="carousel-item rounded-xl border border-white/10 overflow-hidden aspect-[9/16] bg-black">
+                                <video autoplay muted loop playsinline class="w-full h-full object-cover">
+                                    <source src="video1.mp4.mp4" type="video/mp4">
+                                </video>
                             </div>
-                            <div class="carousel-item rounded-xl border border-white/10 overflow-hidden aspect-[9/16] bg-neutral-900 flex items-center justify-center">
-                                <span class="text-[10px] text-gray-700 uppercase font-black">Mídia VRZ #2</span>
+                            <div class="carousel-item rounded-xl border border-white/10 overflow-hidden aspect-[9/16] bg-black">
+                                <video autoplay muted loop playsinline class="w-full h-full object-cover">
+                                    <source src="video2.mp4.mp4" type="video/mp4">
+                                </video>
                             </div>
-                            <div class="carousel-item rounded-xl border border-white/10 overflow-hidden aspect-[9/16] bg-neutral-900 flex items-center justify-center">
-                                <span class="text-[10px] text-gray-700 uppercase font-black">Mídia VRZ #3</span>
+                            <div class="carousel-item rounded-xl border border-white/10 overflow-hidden aspect-[9/16] bg-black">
+                                <video autoplay muted loop playsinline class="w-full h-full object-cover">
+                                    <source src="video3.mp4.mp4" type="video/mp4">
+                                </video>
+                            </div>
+                            <div class="carousel-item rounded-xl border border-white/10 overflow-hidden aspect-[9/16] bg-black">
+                                <img src="video4.mp3.jpg" class="w-full h-full object-cover" alt="VRZ Destaque #4">
                             </div>
                         </div>
                         <p class="text-[8px] text-gray-600 italic text-center uppercase tracking-widest">Rigor técnico e excelência em cada detalhe.</p>
@@ -238,7 +282,7 @@
         };
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'vrz-portal-v2';
 
-        let auth, db, user = null, isAdmin = false, currentSearchProtocol = "";
+        let auth, db, user = null, isAdmin = false, currentSearchProtocol = "", statsChart = null, allDocsCache = [];
 
         const init = async () => {
             try {
@@ -260,6 +304,11 @@
                         loadSuggestions();
                     }
                 });
+
+                const now = new Date();
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                document.getElementById('exportMonth').value = `${now.getFullYear()}-${month}`;
+
             } catch (e) {
                 showModal("Erro de Conexão", "Não foi possível conectar aos servidores VRZ.");
             } finally {
@@ -286,7 +335,7 @@
         const showModal = (title, text, confirmCallback = null) => {
             const modal = document.getElementById('custom-modal');
             document.getElementById('modal-title').innerText = title;
-            document.getElementById('modal-text').innerText = text;
+            document.getElementById('modal-text').innerHTML = text;
             const actions = document.getElementById('modal-actions');
             actions.innerHTML = '';
             const closeBtn = document.createElement('button');
@@ -310,13 +359,13 @@
                 isAdmin = true;
                 document.getElementById('adminIndicator').classList.remove('hidden');
                 document.getElementById('protocolSearchContainer').classList.add('hidden');
+                document.getElementById('adminStats').classList.remove('hidden');
                 loadSuggestions();
             } else if (pass !== null) {
                 showModal("Erro", "Chave incorreta.");
             }
         };
 
-        // Melhoria: Lógica de Arquivos
         window.handleFileSelect = (input) => {
             const display = document.getElementById('fileNameDisplay');
             const removeBtn = document.getElementById('btnRemoveFile');
@@ -354,8 +403,73 @@
             loadSuggestions();
         };
 
+        document.getElementById('btnExportPDF').onclick = () => {
+            const monthStr = document.getElementById('exportMonth').value;
+            if (!monthStr) return;
+
+            const [year, month] = monthStr.split('-').map(Number);
+            const filtered = allDocsCache.filter(doc => {
+                if (!doc.timestamp) return false;
+                const d = new Date(doc.timestamp.seconds * 1000);
+                return d.getFullYear() === year && (d.getMonth() + 1) === month;
+            });
+
+            if (filtered.length === 0) {
+                showModal("Exportar PDF", "Nenhuma ideia encontrada para o mês selecionado.");
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF();
+            pdf.setFontSize(18);
+            pdf.setTextColor(220, 38, 38);
+            pdf.text("VRZ BLINDADOS", 14, 22);
+            pdf.setFontSize(12);
+            pdf.setTextColor(100, 100, 100);
+            pdf.text(`RELATORIO DE INOVACAO - ${monthStr}`, 14, 30);
+
+            const tableData = filtered.map(d => {
+                const date = new Date(d.timestamp.seconds * 1000).toLocaleDateString('pt-BR');
+                const status = d.adminReply ? "RESPONDIDO" : "PENDENTE";
+                return [d.protocol || '---', date, d.name || 'ANONIMO', d.text || '', status];
+            });
+
+            pdf.autoTable({
+                startY: 40,
+                head: [['PROTOCOLO', 'DATA', 'AUTOR', 'PROPOSTA', 'STATUS']],
+                body: tableData,
+                styles: { fontSize: 8 },
+                headStyles: { fillStyle: 'solid', fillColor: [220, 38, 38] }
+            });
+
+            pdf.save(`Relatorio_VRZ_Inovacao_${monthStr}.pdf`);
+        };
+
         const generateProtocol = () => {
             return 'VRZ-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+        };
+
+        const updateChart = (aguardando, respondidos) => {
+            const ctx = document.getElementById('statsChart').getContext('2d');
+            if (statsChart) statsChart.destroy();
+            statsChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Aguardando', 'Respondidos'],
+                    datasets: [{
+                        data: [aguardando, respondidos],
+                        backgroundColor: ['#dc2626', '#16a34a'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } }
+                }
+            });
+            document.getElementById('countPending').innerText = aguardando;
+            document.getElementById('countAnswered').innerText = respondidos;
         };
 
         const loadSuggestions = () => {
@@ -367,50 +481,53 @@
                 if(!list) return;
                 list.innerHTML = '';
                 
-                const docs = snap.docs.map(d => ({id: d.id, ...d.data()}))
-                    .filter(data => {
-                        if (isAdmin) return true;
-                        if (currentSearchProtocol && data.protocol === currentSearchProtocol) return true;
-                        return false;
-                    })
+                allDocsCache = snap.docs.map(d => ({id: d.id, ...d.data()}))
                     .sort((a,b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
 
-                if(docs.length === 0) {
+                let docsToShow = allDocsCache.filter(data => {
+                    if (isAdmin) return true;
+                    if (currentSearchProtocol && data.protocol === currentSearchProtocol) return true;
+                    return false;
+                });
+
+                if (isAdmin) {
+                    const pending = allDocsCache.filter(d => !d.adminReply).length;
+                    const answered = allDocsCache.filter(d => d.adminReply).length;
+                    updateChart(pending, answered);
+                }
+
+                if(docsToShow.length === 0) {
                     if (isAdmin) {
-                        list.innerHTML = '<div class="text-center py-10 opacity-20 italic">Aguardando novas ideias...</div>';
+                        list.innerHTML = '<div class="text-center py-10 opacity-20 italic">Nenhuma proposta cadastrada.</div>';
                     } else if (currentSearchProtocol) {
-                        list.innerHTML = '<div class="text-center py-10 opacity-20 italic">Protocolo não encontrado ou ainda não processado.</div>';
+                        list.innerHTML = '<div class="text-center py-10 opacity-20 italic">Protocolo não encontrado.</div>';
                     } else {
                         list.innerHTML = '<div class="text-center py-10 opacity-30 italic font-bold">INSIRA SEU PROTOCOLO PARA ACOMPANHAR SUA IDEIA.</div>';
                     }
                     return;
                 }
 
-                docs.forEach(data => {
+                const renderCard = (data) => {
                     const div = document.createElement('div');
                     div.className = 'glass p-4 rounded-2xl suggestion-card space-y-2 mb-4';
-                    
                     const adminTools = isAdmin ? `
                         <div class="flex gap-4 mt-2 pt-2 border-t border-white/5">
                             <button data-id="${data.id}" class="btn-reply text-[7px] text-blue-500 font-black uppercase">Responder</button>
                             <button data-id="${data.id}" class="btn-delete text-[7px] text-red-600 font-black uppercase">Excluir</button>
                         </div>
                     ` : '';
-                    
                     const replyUI = data.adminReply ? `
                         <div class="reply-box">
                             <span class="text-[7px] font-black uppercase text-red-600 block mb-1">Feedback VRZ</span>
                             <p class="text-[10px] text-gray-400 italic">${data.adminReply}</p>
                         </div>
                     ` : '';
-
                     const fileUI = data.attachmentName ? `
                         <div class="flex items-center gap-2 bg-white/5 p-2 rounded-lg mt-2 border border-white/5">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" /></svg>
                             <span class="text-[8px] text-gray-500 uppercase font-black truncate">${data.attachmentName}</span>
                         </div>
                     ` : '';
-
                     div.innerHTML = `
                         <div class="flex justify-between items-start">
                             <div class="flex flex-col">
@@ -424,8 +541,43 @@
                         ${replyUI}
                         ${adminTools}
                     `;
-                    list.appendChild(div);
-                });
+                    return div;
+                };
+
+                if (isAdmin) {
+                    const aguardando = docsToShow.filter(d => !d.adminReply);
+                    const respondidos = docsToShow.filter(d => d.adminReply);
+
+                    const headerPend = document.createElement('h3');
+                    headerPend.className = 'text-[10px] font-black uppercase text-red-600 tracking-[0.2em] px-2 mb-2';
+                    headerPend.innerText = `Aguardando Resposta (${aguardando.length})`;
+                    list.appendChild(headerPend);
+                    
+                    if(aguardando.length === 0) {
+                        const empty = document.createElement('div');
+                        empty.className = 'text-center py-4 opacity-20 italic text-[10px]';
+                        empty.innerText = 'Tudo em dia!';
+                        list.appendChild(empty);
+                    } else {
+                        aguardando.forEach(data => list.appendChild(renderCard(data)));
+                    }
+
+                    const headerResp = document.createElement('h3');
+                    headerResp.className = 'text-[10px] font-black uppercase text-green-600 tracking-[0.2em] px-2 mt-8 mb-2';
+                    headerResp.innerText = `Respondidos (${respondidos.length})`;
+                    list.appendChild(headerResp);
+
+                    if(respondidos.length === 0) {
+                        const empty = document.createElement('div');
+                        empty.className = 'text-center py-4 opacity-20 italic text-[10px]';
+                        empty.innerText = 'Nenhuma resposta enviada.';
+                        list.appendChild(empty);
+                    } else {
+                        respondidos.forEach(data => list.appendChild(renderCard(data)));
+                    }
+                } else {
+                    docsToShow.forEach(data => list.appendChild(renderCard(data)));
+                }
 
                 if(isAdmin) {
                     list.querySelectorAll('.btn-delete').forEach(btn => {
@@ -470,14 +622,10 @@
 
             try {
                 await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'suggestions'), data);
-                
-                // Reset form
                 document.getElementById('userText').value = '';
                 document.getElementById('userName').value = '';
                 removeSelectedFile();
-                
-                showModal("Proposta Recebida!", `Sua ideia foi registrada. ANOTE SEU PROTOCOLO PARA ACOMPANHAR: ${protocol}`);
-                
+                showModal("Proposta Recebida!", `Sua ideia foi registrada. ANOTE SEU PROTOCOLO PARA ACOMPANHAR: <br><span class='text-red-600 text-lg font-black underline decoration-2 block mt-2 select-all'>${protocol}</span>`);
                 btn.innerText = "ENVIADO!";
                 btn.classList.replace('bg-red-600', 'bg-green-600');
                 setTimeout(() => { 
