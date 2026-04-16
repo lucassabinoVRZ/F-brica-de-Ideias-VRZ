@@ -287,6 +287,8 @@
         import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+        // CONFIGURAÇÃO FIREBASE
+        // Importante: Verifique se a apiKey não está vazia.
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
             apiKey: "", 
             authDomain: "portal-vrz-81ba7.firebaseapp.com",
@@ -299,27 +301,43 @@
 
         let auth, db, user = null, isAdmin = false, currentSearchProtocol = "", statsChart = null, allDocsCache = [];
 
+        const updateStatusUI = (text, isError = false) => {
+            const statusEl = document.getElementById('userIdDisplay');
+            if (statusEl) {
+                statusEl.innerText = text;
+                statusEl.className = isError ? "text-red-600 italic uppercase underline" : "text-green-500 italic uppercase";
+                if(isError) console.error("Firebase Status Error:", text);
+            }
+        };
+
         const init = async () => {
             try {
                 const app = initializeApp(firebaseConfig);
                 auth = getAuth(app);
                 db = getFirestore(app);
 
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
+                const initAuth = async () => {
+                    try {
+                        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                            await signInWithCustomToken(auth, __initial_auth_token);
+                        } else {
+                            await signInAnonymously(auth);
+                        }
+                    } catch (authError) {
+                        updateStatusUI(`ERRO AUTH: ${authError.code || authError.message}`, true);
+                        throw authError; // Repassar para o catch principal
+                    }
+                };
+
+                await initAuth();
 
                 onAuthStateChanged(auth, (u) => {
                     user = u;
                     if (user) {
-                        const statusEl = document.getElementById('userIdDisplay');
-                        if (statusEl) {
-                            statusEl.innerText = "CONECTADO";
-                            statusEl.className = "text-green-500 italic uppercase";
-                        }
+                        updateStatusUI("CONECTADO");
                         setupSuggestionsListener();
+                    } else {
+                        updateStatusUI("DESCONECTADO", true);
                     }
                 });
 
@@ -329,7 +347,8 @@
                 if (monthEl) monthEl.value = `${now.getFullYear()}-${month}`;
 
             } catch (e) {
-                console.error("Firebase Init Error:", e);
+                console.error("Firebase Global Init Error:", e);
+                updateStatusUI(`ERRO SISTEMA: ${e.code || e.message}`, true);
             } finally {
                 setTimeout(() => {
                     const loader = document.getElementById('loader');
@@ -337,13 +356,13 @@
                         loader.style.opacity = '0';
                         setTimeout(() => loader.remove(), 500);
                     }
-                }, 800);
+                }, 1000);
             }
         };
 
         window.addEventListener('load', init);
 
-        // Navigation
+        // Funções de Navegação
         window.showPage = (id) => {
             document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
@@ -381,7 +400,7 @@
             modal.style.display = 'flex';
         };
 
-        // Admin Access
+        // Acesso Administrativo
         window.loginAdmin = () => {
             if (isAdmin) return;
             const modal = document.getElementById('custom-modal');
@@ -439,7 +458,7 @@
             renderSuggestions();
         };
 
-        // Form Handling
+        // Gestão do Formulário
         window.handleFileSelect = (input) => {
             const display = document.getElementById('fileNameDisplay');
             const removeBtn = document.getElementById('btnRemoveFile');
@@ -524,7 +543,7 @@
             pdf.save(`Relatorio_VRZ_${monthStr}.pdf`);
         };
 
-        // Data Management
+        // Gestão de Dados (Firestore)
         const generateProtocol = () => 'VRZ-' + Math.random().toString(36).substring(2, 8).toUpperCase();
 
         const updateChart = (aguardando, respondidos) => {
@@ -561,7 +580,10 @@
                 allDocsCache = snap.docs.map(d => ({id: d.id, ...d.data()}))
                     .sort((a,b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
                 renderSuggestions();
-            }, (error) => console.error(error));
+            }, (error) => {
+                console.error("Firestore Error:", error);
+                updateStatusUI(`ERRO FIREBASE: ${error.code || 'PERMISSÃO'}`, true);
+            });
         };
 
         const renderSuggestions = () => {
@@ -623,11 +645,11 @@
             });
         };
 
-        // Form Submission Logic
+        // Lógica de Submissão do Formulário
         document.getElementById('feedbackForm').onsubmit = async (e) => {
             e.preventDefault();
             if (!user || !db) {
-                showModal("Erro", "Sistema ainda está conectando. Por favor, aguarde alguns segundos.");
+                showModal("Erro de Conexão", "O portal não está ligado ao servidor Firebase. Verifique se o Status no topo mostra algum erro.");
                 return;
             }
             
@@ -667,7 +689,7 @@
                 console.error("Submission Error:", err);
                 btn.innerText = "ERRO DE REDE";
                 btn.disabled = false;
-                showModal("Erro no Envio", "Não foi possível enviar sua ideia. Verifique sua conexão e tente novamente.");
+                showModal("Erro no Envio", `Não foi possível enviar: ${err.message || 'Erro de permissão'}`);
             }
         };
     </script>
