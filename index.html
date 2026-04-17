@@ -46,9 +46,9 @@
     </div>
 
     <div id="custom-modal">
-        <div class="modal-content shadow-2xl shadow-red-600/10">
-            <h3 id="modal-title" class="text-xl font-black italic uppercase text-red-600 mb-4">Aviso</h3>
-            <div id="modal-text" class="text-sm text-gray-400 mb-6 italic leading-relaxed text-left"></div>
+        <div class="modal-content shadow-2xl shadow-red-600/10 text-left">
+            <h3 id="modal-title" class="text-xl font-black italic uppercase text-red-600 mb-4 text-center">Aviso</h3>
+            <div id="modal-text" class="text-sm text-gray-400 mb-6 italic leading-relaxed"></div>
             <div id="modal-actions" class="flex gap-4 justify-center">
                 <button id="modal-close" class="bg-gray-800 px-6 py-2 rounded-lg text-xs font-bold uppercase hover:bg-gray-700 transition-all">Fechar</button>
             </div>
@@ -63,10 +63,21 @@
             <button onclick="showPage('suggestions')" id="nav-suggestions" class="nav-link active">Sugestões</button>
             <button onclick="showPage('about')" id="nav-about" class="nav-link">Somos VRZ</button>
         </div>
-        <div class="text-[9px] text-gray-600 font-mono flex items-center gap-2">
-            STATUS: <span id="userIdDisplay" class="text-red-500 italic uppercase">A Conectar</span>
+        <div class="text-[9px] text-gray-600 font-mono flex items-center gap-2 uppercase tracking-tighter">
+            STATUS: <span id="userIdDisplay" class="text-red-500 italic">A Conectar</span>
         </div>
     </nav>
+
+    <div class="mobile-nav">
+        <button onclick="showPage('suggestions')" class="flex flex-col items-center gap-1">
+            <div id="m-nav-suggestions" class="w-2 h-2 rounded-full bg-red-600"></div>
+            <span class="text-[8px] font-black uppercase text-white tracking-widest">Sugestões</span>
+        </button>
+        <button onclick="showPage('about')" class="flex flex-col items-center gap-1">
+            <div id="m-nav-about" class="w-2 h-2 rounded-full bg-transparent"></div>
+            <span class="text-[8px] font-black uppercase text-white tracking-widest">VRZ</span>
+        </button>
+    </div>
 
     <main class="max-w-6xl mx-auto p-4 md:p-8">
         
@@ -74,7 +85,7 @@
         <section id="page-suggestions" class="page-content active space-y-10">
             <div class="text-center space-y-2">
                 <h1 class="text-4xl md:text-5xl font-black italic uppercase">Fábrica de <span class="text-red-600">Ideias</span></h1>
-                <p class="text-[10px] text-gray-500 uppercase tracking-[0.3em] font-bold">Inovação que protege o amanhã</p>
+                <p class="text-[10px] text-gray-500 uppercase tracking-[0.3em] font-bold">Ideias que protegem o amanhã</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-5 gap-8">
@@ -95,31 +106,54 @@
                         <div id="prodLineContainer"><input type="text" id="userProdLine" class="input-field" placeholder="Linha de Produção (Opcional)"></div>
                         
                         <textarea id="userText" required rows="4" class="input-field resize-none" placeholder="Descreva sua ideia de forma clara..."></textarea>
-                        <button type="submit" id="submitBtn" class="w-full bg-red-600 py-4 rounded-xl font-black uppercase italic tracking-tighter hover:bg-red-700 transition-all">Enviar Proposta</button>
+                        
+                        <button type="submit" id="submitBtn" class="w-full bg-red-600 py-4 rounded-xl font-black uppercase italic tracking-tighter hover:bg-red-700 transition-all disabled:opacity-50">Enviar Proposta</button>
                     </form>
                 </div>
 
                 <div class="md:col-span-3 space-y-4">
-                    <div id="protocolSearchContainer" class="px-2">
-                        <div class="relative">
-                            <input type="text" id="protocolInput" class="input-field !py-3 !text-[11px] uppercase pr-20" placeholder="Acompanhar Protocolo (Ex: VRZ-XXXX)">
-                            <button id="btnSearchProtocol" class="absolute right-2 top-1/2 -translate-y-1/2 text-[9px] font-black text-red-600 uppercase tracking-widest px-3 py-1 hover:bg-red-600/10 rounded-lg transition-all">Buscar</button>
+                    <div class="flex flex-col gap-4">
+                        <div class="flex items-center justify-between px-2">
+                            <button onclick="loginAdminModal()" id="suggestionsHeader" class="text-sm font-bold uppercase italic text-gray-500 admin-btn">Área Restrita</button>
+                            <div id="adminIndicator" class="hidden flex items-center gap-4">
+                                <span class="text-[8px] font-black text-red-600 uppercase tracking-widest animate-pulse">Painel VRZ Ativo</span>
+                                <button onclick="location.reload()" class="text-[8px] font-black text-white bg-red-600/20 hover:bg-red-600 px-2 py-1 rounded transition-all uppercase border border-red-600/30">Sair</button>
+                            </div>
                         </div>
-                    </div>
+                        
+                        <div id="adminStats" class="hidden px-2 mb-4 space-y-4">
+                            <div class="glass p-4 rounded-2xl flex items-center gap-6">
+                                <div class="w-24 h-24"><canvas id="statsChart"></canvas></div>
+                                <div class="flex flex-col gap-1">
+                                    <h4 class="text-[10px] font-black uppercase text-gray-500">Métricas</h4>
+                                    <span class="text-[11px] font-bold">Pendentes: <span id="countPending" class="text-red-500">0</span></span>
+                                    <span class="text-[11px] font-bold">Concluídos: <span id="countAnswered" class="text-green-500">0</span></span>
+                                    <button id="btnExportPDF" class="mt-2 bg-white/10 hover:bg-red-600 text-white px-3 py-1 rounded-full text-[9px] font-black uppercase transition-all">Exportar PDF</button>
+                                </div>
+                            </div>
+                        </div>
 
-                    <div id="suggestionsList" class="space-y-6 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
-                        <div class="text-center py-20 opacity-30 italic flex flex-col items-center gap-4 text-xs uppercase font-bold tracking-widest">
-                            Insira um protocolo para pesquisar sua ideia.
+                        <div id="protocolSearchContainer" class="px-2">
+                            <div class="relative">
+                                <input type="text" id="protocolInput" class="input-field !py-3 !text-[11px] uppercase pr-20" placeholder="Acompanhar Protocolo (Ex: VRZ-XXXX)">
+                                <button id="btnSearchProtocol" class="absolute right-2 top-1/2 -translate-y-1/2 text-[9px] font-black text-red-600 uppercase tracking-widest px-3 py-1 hover:bg-red-600/10 rounded-lg transition-all">Buscar</button>
+                            </div>
+                        </div>
+
+                        <div id="suggestionsList" class="space-y-6 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+                            <div class="text-center py-20 opacity-30 italic flex flex-col items-center gap-4 text-xs uppercase font-bold tracking-widest">
+                                Insira um protocolo para pesquisar sua ideia.
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- SEÇÃO: SOMOS VRZ (RESTAURADA) -->
+        <!-- PÁGINA: SOMOS VRZ (DESIGN COMPLETO RESTAURADO) -->
         <section id="page-about" class="page-content space-y-12">
             <div class="text-center space-y-4">
-                <h1 class="text-4xl md:text-7xl font-black italic uppercase leading-none">Somos <span class="text-red-600">VRZ</span></h1>
+                <h1 class="text-4xl md:text-7xl font-black italic uppercase leading-none text-white">Somos <span class="text-red-600">VRZ</span></h1>
                 <p class="text-gray-500 uppercase tracking-[0.4em] font-bold text-[10px]">Excelência em Blindagem Automotiva Premium</p>
             </div>
 
@@ -171,7 +205,6 @@
                     </div>
                 </div>
 
-                <!-- CARROSSEL DE MOCKUP -->
                 <div class="glass p-8 rounded-[2.5rem] border border-white/5 overflow-hidden">
                     <h2 class="text-xl font-black uppercase italic text-white mb-6">Excelência VRZ</h2>
                     <div class="carousel-container custom-scrollbar">
@@ -179,6 +212,7 @@
                         <div class="carousel-item rounded-2xl border border-white/10 aspect-[9/16] bg-neutral-900 flex items-center justify-center italic text-gray-700 text-[10px] font-black uppercase tracking-widest">Vidros Balísticos</div>
                         <div class="carousel-item rounded-2xl border border-white/10 aspect-[9/16] bg-neutral-900 flex items-center justify-center italic text-gray-700 text-[10px] font-black uppercase tracking-widest">Acabamento Premium</div>
                     </div>
+                    <p class="text-center text-[8px] text-gray-600 uppercase mt-4 font-black italic tracking-widest opacity-50">Qualidade Garantida</p>
                 </div>
             </div>
         </section>
@@ -189,7 +223,7 @@
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
 
-        // CONFIGURAÇÕES CONFIRMADAS PELA SUA IMAGEM image_483387.png
+        // CHAVES OFICIAIS PORTAL VRZ
         const firebaseConfig = {
             apiKey: "AIzaSyDSvjmRtKMnipJUdwF6gdFhSoGo2gBBJJc",
             authDomain: "portal-vrz.firebaseapp.com",
@@ -201,7 +235,7 @@
         };
 
         const appId = "portal-vrz";
-        let auth, db, user = null, isAdmin = false, currentSearchProtocol = "", allDocsCache = [];
+        let auth, db, user = null, isAdmin = false, currentSearchProtocol = "", statsChart = null, allDocsCache = [];
 
         const updateStatusUI = (text, isError = false) => {
             const statusEl = document.getElementById('userIdDisplay');
@@ -213,6 +247,7 @@
 
         const init = async () => {
             try {
+                // FIX: Removemos qualquer tentativa de usar config do ambiente para evitar erro de API Key inválida no Preview
                 const app = initializeApp(firebaseConfig);
                 auth = getAuth(app);
                 db = getFirestore(app);
@@ -226,14 +261,18 @@
                         try {
                             await signInAnonymously(auth);
                         } catch (e) {
-                            // SE DER ERRO AQUI, É POR CAUSA DO DOMÍNIO NO GITHUB
                             let domain = window.location.hostname;
-                            updateStatusUI(`ERRO: ADICIONE "${domain}" NO FIREBASE AUTH (${e.code})`, true);
+                            // Se o erro for de domínio, avisamos. Se for de API Key, o usuário deve conferir no Console do Firebase.
+                            if(e.code === "auth/unauthorized-domain") {
+                                updateStatusUI(`ERRO: ADICIONE "${domain}" NO FIREBASE AUTH`, true);
+                            } else {
+                                updateStatusUI(`ERRO: ${e.code}`, true);
+                            }
                         }
                     }
                 });
             } catch (e) {
-                updateStatusUI("ERRO CONFIGURAÇÃO", true);
+                updateStatusUI("ERRO SISTEMA", true);
             } finally {
                 setTimeout(() => document.getElementById('loader')?.remove(), 1000);
             }
@@ -242,11 +281,13 @@
         window.addEventListener('load', init);
 
         const setupSuggestionsListener = () => {
+            if (!user || !db) return;
             const ref = collection(db, 'artifacts', appId, 'public', 'data', 'suggestions');
             onSnapshot(ref, (snap) => {
                 allDocsCache = snap.docs.map(d => ({id: d.id, ...d.data()}))
                     .sort((a,b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
                 renderSuggestions();
+                if (isAdmin) updateDashboard();
             }, (error) => {
                 updateStatusUI("ERRO FIRESTORE: REGRAS BLOQUEADAS", true);
             });
@@ -265,14 +306,14 @@
 
             docsToShow.forEach(data => {
                 const div = document.createElement('div');
-                div.className = 'glass p-5 rounded-2xl mb-4 border border-white/5 hover:border-red-600/20 transition-all';
+                div.className = 'glass p-5 rounded-2xl suggestion-card space-y-3 mb-4 border border-white/5 transition-all hover:border-red-600/20';
                 div.innerHTML = `
-                    <div class="flex justify-between items-start mb-2">
+                    <div class="flex justify-between items-start">
                         <div class="flex flex-col">
                             <span class="text-red-500 font-black uppercase text-[10px] tracking-widest">${data.name || 'Anónimo'}</span>
                             <span class="text-[7px] text-gray-500 font-mono mt-0.5">${data.protocol || '---'}</span>
                         </div>
-                        <span class="text-[7px] text-gray-600 font-bold uppercase">${data.sector || ''}</span>
+                        <span class="text-[7px] text-gray-600 font-bold uppercase">${data.sector || ''} ${data.prodLine ? '• ' + data.prodLine : ''}</span>
                     </div>
                     <p class="text-gray-300 italic text-[11px] leading-relaxed">"${data.text || ''}"</p>
                     ${data.adminReply ? `<div class='reply-box'><span class='text-[7px] font-black text-red-600 uppercase block mb-1'>Resposta VRZ</span><p class='text-[10px] text-gray-300'>${data.adminReply}</p></div>` : ''}
@@ -295,10 +336,7 @@
             btn.disabled = true; btn.innerText = "A ENVIAR...";
             try {
                 await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'suggestions'), data);
-                const modal = document.getElementById('custom-modal');
-                document.getElementById('modal-title').innerText = "Sucesso";
-                document.getElementById('modal-text').innerHTML = `Ideia registada!<br>Protocolo: <span class='text-red-600 font-black'>${protocol}</span>`;
-                modal.style.display = 'flex';
+                showModal("Sucesso", `Ideia registada!<br>Protocolo: <span class='text-red-600 font-black'>${protocol}</span>`);
                 document.getElementById('feedbackForm').reset();
                 btn.innerText = "ENVIADO";
                 setTimeout(() => { btn.disabled = false; btn.innerText = "Enviar Proposta"; }, 3000);
@@ -308,9 +346,20 @@
             }
         };
 
+        const showModal = (title, text, confirmCallback = null) => {
+            const modal = document.getElementById('custom-modal');
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-text').innerHTML = text;
+            modal.style.display = 'flex';
+        };
+
         window.showPage = (id) => {
             document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            const mS = document.getElementById('m-nav-suggestions');
+            const mA = document.getElementById('m-nav-about');
+            if (mS) mS.className = id === 'suggestions' ? 'w-2 h-2 rounded-full bg-red-600' : 'w-2 h-2 rounded-full bg-transparent';
+            if (mA) mA.className = id === 'about' ? 'w-2 h-2 rounded-full bg-red-600' : 'w-2 h-2 rounded-full bg-transparent';
             document.getElementById(`page-${id}`)?.classList.add('active');
             document.getElementById(`nav-${id}`)?.classList.add('active');
             window.scrollTo({top: 0, behavior: 'smooth'});
