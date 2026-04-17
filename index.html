@@ -285,51 +285,53 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // CONFIGURAÇÃO FIREBASE
-        // Importante: Verifique se a apiKey não está vazia.
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-            apiKey: "", 
-            authDomain: "portal-vrz-81ba7.firebaseapp.com",
-            projectId: "portal-vrz-81ba7",
-            storageBucket: "portal-vrz-81ba7.firebasestorage.app",
-            messagingSenderId: "412528367584",
-            appId: "1:412528367584:web:3868b331829839ae58bd85"
+        // Configurações extraídas das suas chaves do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDSvjmRtKMnipJUdwF6gdFhSoGo2gBBJJc",
+            authDomain: "portal-vrz.firebaseapp.com",
+            projectId: "portal-vrz",
+            storageBucket: "portal-vrz.firebasestorage.app",
+            messagingSenderId: "917728239822",
+            appId: "1:917728239822:web:c344c5ef3cefa27a71b09f",
+            measurementId: "G-LS22WVJHR8"
         };
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'vrz-portal-master';
 
-        let auth, db, user = null, isAdmin = false, currentSearchProtocol = "", statsChart = null, allDocsCache = [];
+        const appId = "portal-vrz";
+        let auth, db, user = null, isAdmin = false, currentSearchProtocol = "", allDocsCache = [], statsChart = null;
 
         const updateStatusUI = (text, isError = false) => {
             const statusEl = document.getElementById('userIdDisplay');
             if (statusEl) {
                 statusEl.innerText = text;
                 statusEl.className = isError ? "text-red-600 italic uppercase underline" : "text-green-500 italic uppercase";
-                if(isError) console.error("Firebase Status Error:", text);
             }
         };
 
         const init = async () => {
             try {
-                const app = initializeApp(firebaseConfig);
+                // Tenta carregar config do ambiente (fallback para hardcoded se falhar)
+                const finalConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : firebaseConfig;
+                
+                const app = initializeApp(finalConfig);
                 auth = getAuth(app);
                 db = getFirestore(app);
 
-                const initAuth = async () => {
+                // Autenticação (segue RULE 3)
+                const performAuth = async () => {
                     try {
                         if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                             await signInWithCustomToken(auth, __initial_auth_token);
                         } else {
                             await signInAnonymously(auth);
                         }
-                    } catch (authError) {
-                        updateStatusUI(`ERRO AUTH: ${authError.code || authError.message}`, true);
-                        throw authError; // Repassar para o catch principal
+                    } catch (e) {
+                        updateStatusUI(`ERRO AUTH: ATIVE LOGIN ANÓNIMO`, true);
                     }
                 };
 
-                await initAuth();
+                await performAuth();
 
                 onAuthStateChanged(auth, (u) => {
                     user = u;
@@ -347,8 +349,7 @@
                 if (monthEl) monthEl.value = `${now.getFullYear()}-${month}`;
 
             } catch (e) {
-                console.error("Firebase Global Init Error:", e);
-                updateStatusUI(`ERRO SISTEMA: ${e.code || e.message}`, true);
+                updateStatusUI(`ERRO SISTEMA`, true);
             } finally {
                 setTimeout(() => {
                     const loader = document.getElementById('loader');
@@ -362,227 +363,17 @@
 
         window.addEventListener('load', init);
 
-        // Funções de Navegação
-        window.showPage = (id) => {
-            document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            
-            const mS = document.getElementById('m-nav-suggestions');
-            const mA = document.getElementById('m-nav-about');
-            if (mS) mS.className = id === 'suggestions' ? 'w-2 h-2 rounded-full bg-red-600' : 'w-2 h-2 rounded-full bg-transparent';
-            if (mA) mA.className = id === 'about' ? 'w-2 h-2 rounded-full bg-red-600' : 'w-2 h-2 rounded-full bg-transparent';
-
-            document.getElementById(`page-${id}`)?.classList.add('active');
-            document.getElementById(`nav-${id}`)?.classList.add('active');
-            window.scrollTo({top: 0, behavior: 'smooth'});
-        };
-
-        const showModal = (title, text, confirmCallback = null) => {
-            const modal = document.getElementById('custom-modal');
-            document.getElementById('modal-title').innerText = title;
-            document.getElementById('modal-text').innerHTML = text;
-            const actions = document.getElementById('modal-actions');
-            actions.innerHTML = '';
-            
-            const closeBtn = document.createElement('button');
-            closeBtn.className = "bg-gray-800 px-6 py-2 rounded-lg text-xs font-bold uppercase hover:bg-gray-700 transition-colors";
-            closeBtn.innerText = confirmCallback ? "Cancelar" : "Fechar";
-            closeBtn.onclick = () => modal.style.display = 'none';
-            actions.appendChild(closeBtn);
-            
-            if (confirmCallback) {
-                const confirmBtn = document.createElement('button');
-                confirmBtn.className = "bg-red-600 px-6 py-2 rounded-lg text-xs font-bold uppercase hover:bg-red-700 transition-colors";
-                confirmBtn.innerText = "Confirmar";
-                confirmBtn.onclick = () => { confirmCallback(); modal.style.display = 'none'; };
-                actions.appendChild(confirmBtn);
-            }
-            modal.style.display = 'flex';
-        };
-
-        // Acesso Administrativo
-        window.loginAdmin = () => {
-            if (isAdmin) return;
-            const modal = document.getElementById('custom-modal');
-            document.getElementById('modal-title').innerText = "Acesso Administrativo";
-            document.getElementById('modal-text').innerHTML = `
-                <div class="space-y-4 text-left">
-                    <div class="space-y-1">
-                        <label class="text-[9px] uppercase font-bold text-gray-500 ml-2">Usuário VRZ</label>
-                        <input type="text" id="adminUser" class="input-field" placeholder="Ex: Nome.Sobrenome">
-                    </div>
-                    <div class="space-y-1">
-                        <label class="text-[9px] uppercase font-bold text-gray-500 ml-2">Senha de Acesso</label>
-                        <input type="password" id="adminPass" class="input-field" placeholder="••••••••">
-                    </div>
-                </div>
-            `;
-            const actions = document.getElementById('modal-actions');
-            actions.innerHTML = '';
-            const cancelBtn = document.createElement('button');
-            cancelBtn.className = "bg-gray-800 px-6 py-2 rounded-lg text-xs font-bold uppercase hover:bg-gray-700 transition-colors";
-            cancelBtn.innerText = "Cancelar";
-            cancelBtn.onclick = () => modal.style.display = 'none';
-            const loginBtn = document.createElement('button');
-            loginBtn.className = "bg-red-600 px-6 py-2 rounded-lg text-xs font-bold uppercase hover:bg-red-700 transition-colors";
-            loginBtn.innerText = "Acessar";
-            loginBtn.onclick = () => {
-                const userLogin = document.getElementById('adminUser').value;
-                const passLogin = document.getElementById('adminPass').value;
-                const admins = { "Lucas.Sabino": "Vrz2024", "Eduardo.Rocha": "Helito@1313" };
-                if (admins[userLogin] === passLogin) {
-                    isAdmin = true;
-                    document.getElementById('adminIndicator').classList.remove('hidden');
-                    document.getElementById('suggestionsHeader').classList.add('hidden');
-                    document.getElementById('protocolSearchContainer').classList.add('hidden');
-                    document.getElementById('adminStats').classList.remove('hidden');
-                    renderSuggestions();
-                    modal.style.display = 'none';
-                } else {
-                    showModal("Erro", "Credenciais administrativas incorretas.");
-                }
-            };
-            actions.appendChild(cancelBtn);
-            actions.appendChild(loginBtn);
-            modal.style.display = 'flex';
-        };
-
-        window.logoutAdmin = () => {
-            isAdmin = false;
-            document.getElementById('adminIndicator').classList.add('hidden');
-            document.getElementById('suggestionsHeader').classList.remove('hidden');
-            document.getElementById('protocolSearchContainer').classList.remove('hidden');
-            document.getElementById('adminStats').classList.add('hidden');
-            currentSearchProtocol = "";
-            document.getElementById('protocolInput').value = "";
-            renderSuggestions();
-        };
-
-        // Gestão do Formulário
-        window.handleFileSelect = (input) => {
-            const display = document.getElementById('fileNameDisplay');
-            const removeBtn = document.getElementById('btnRemoveFile');
-            if (input.files && input.files[0]) {
-                display.innerText = input.files[0].name;
-                removeBtn.classList.remove('hidden');
-            }
-        };
-
-        window.removeSelectedFile = () => {
-            const input = document.getElementById('userFile');
-            const display = document.getElementById('fileNameDisplay');
-            const removeBtn = document.getElementById('btnRemoveFile');
-            if (input) input.value = "";
-            if (display) display.innerText = "Selecionar Arquivo";
-            if (removeBtn) removeBtn.classList.add('hidden');
-        };
-
-        document.getElementById('isAnonymous').onchange = (e) => {
-            const isChecked = e.target.checked;
-            const containers = ['nameContainer', 'sectorContainer', 'prodLineContainer'];
-            
-            containers.forEach(id => {
-                const el = document.getElementById(id);
-                if (isChecked) {
-                    el.classList.add('hidden');
-                } else {
-                    el.classList.remove('hidden');
-                }
-            });
-
-            const nameInput = document.getElementById('userName');
-            if (isChecked) {
-                nameInput.required = false;
-                nameInput.value = "";
-            } else {
-                nameInput.required = true;
-            }
-        };
-
-        document.getElementById('btnSearchProtocol').onclick = () => {
-            currentSearchProtocol = document.getElementById('protocolInput').value.trim().toUpperCase();
-            renderSuggestions();
-        };
-
-        document.getElementById('btnExportPDF').onclick = () => {
-            const monthStr = document.getElementById('exportMonth').value;
-            if (!monthStr) return;
-            const [year, month] = monthStr.split('-').map(Number);
-            const filtered = allDocsCache.filter(docData => {
-                if (!docData.timestamp) return false;
-                const d = new Date(docData.timestamp.seconds * 1000);
-                return d.getFullYear() === year && (d.getMonth() + 1) === month;
-            });
-            if (filtered.length === 0) {
-                showModal("Exportar PDF", "Nenhuma ideia encontrada para este período.");
-                return;
-            }
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF();
-            pdf.setFillColor(20, 20, 20);
-            pdf.rect(0, 0, 210, 40, 'F');
-            pdf.setFontSize(22);
-            pdf.setTextColor(220, 38, 38);
-            pdf.text("VRZ BLINDADOS", 14, 20);
-            pdf.setFontSize(10);
-            pdf.setTextColor(150, 150, 150);
-            pdf.text(`RELATÓRIO DE INOVAÇÃO CORPORATIVA - ${monthStr}`, 14, 30);
-            const tableData = filtered.map(d => {
-                const dateStr = d.timestamp ? new Date(d.timestamp.seconds * 1000).toLocaleDateString('pt-BR') : '---';
-                const status = d.adminReply ? "RESOLVIDO" : "EM ANÁLISE";
-                return [d.protocol || '---', dateStr, d.name || 'ANÔNIMO', d.text || '', status];
-            });
-            pdf.autoTable({
-                startY: 45,
-                head: [['PROTOCOLO', 'DATA', 'AUTOR', 'PROPOSTA', 'STATUS']],
-                body: tableData,
-                styles: { fontSize: 8, fontStyle: 'italic' },
-                headStyles: { fillColor: [220, 38, 38] },
-                alternateRowStyles: { fillColor: [245, 245, 245] }
-            });
-            pdf.save(`Relatorio_VRZ_${monthStr}.pdf`);
-        };
-
-        // Gestão de Dados (Firestore)
-        const generateProtocol = () => 'VRZ-' + Math.random().toString(36).substring(2, 8).toUpperCase();
-
-        const updateChart = (aguardando, respondidos) => {
-            const canvas = document.getElementById('statsChart');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            if (statsChart) statsChart.destroy();
-            statsChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Pendente', 'Concluído'],
-                    datasets: [{
-                        data: [aguardando, respondidos],
-                        backgroundColor: ['#dc2626', '#16a34a'],
-                        borderWidth: 0,
-                        hoverOffset: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    cutout: '70%'
-                }
-            });
-            document.getElementById('countPending').innerText = aguardando;
-            document.getElementById('countAnswered').innerText = respondidos;
-        };
-
         const setupSuggestionsListener = () => {
             if (!user || !db) return;
+            // RULE 1: artifacts/{appId}/public/data/{collectionName}
             const suggestionsRef = collection(db, 'artifacts', appId, 'public', 'data', 'suggestions');
             onSnapshot(suggestionsRef, (snap) => {
                 allDocsCache = snap.docs.map(d => ({id: d.id, ...d.data()}))
                     .sort((a,b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
                 renderSuggestions();
+                if (isAdmin) updateDashboard();
             }, (error) => {
-                console.error("Firestore Error:", error);
-                updateStatusUI(`ERRO FIREBASE: ${error.code || 'PERMISSÃO'}`, true);
+                updateStatusUI(`ERRO REGRAS`, true);
             });
         };
 
@@ -590,54 +381,49 @@
             const list = document.getElementById('suggestionsList');
             if(!list) return;
             list.innerHTML = '';
+            
             let docsToShow = allDocsCache.filter(data => {
                 if (isAdmin) return true;
-                if (currentSearchProtocol && data.protocol === currentSearchProtocol) return true;
-                return false;
+                return currentSearchProtocol && data.protocol === currentSearchProtocol;
             });
-            if (isAdmin) {
-                const pending = allDocsCache.filter(d => !d.adminReply).length;
-                const answered = allDocsCache.filter(d => d.adminReply).length;
-                updateChart(pending, answered);
-            }
+            
             if(docsToShow.length === 0) {
-                const emptyMsg = isAdmin ? "Nenhuma proposta no banco de dados." : (currentSearchProtocol ? "Protocolo não localizado." : "Aguardando termo de pesquisa.");
+                const emptyMsg = currentSearchProtocol ? "Protocolo não encontrado." : "Aguardando protocolo...";
                 list.innerHTML = `<div class="text-center py-20 opacity-20 italic text-xs uppercase font-bold tracking-widest">${emptyMsg}</div>`;
                 return;
             }
+
             docsToShow.forEach(data => {
                 const div = document.createElement('div');
-                div.className = 'glass p-5 rounded-2xl suggestion-card space-y-3 mb-4 border border-white/5 hover:border-red-600/20 transition-all';
+                div.className = 'glass p-5 rounded-2xl suggestion-card space-y-3 mb-4 border border-white/5 transition-all hover:border-red-600/20';
+                
                 const adminTools = isAdmin ? `
                     <div class="flex gap-4 mt-3 pt-3 border-t border-white/5">
-                        <button data-id="${data.id}" class="btn-reply text-[8px] text-blue-500 font-black uppercase hover:underline">Responder</button>
-                        <button data-id="${data.id}" class="btn-delete text-[8px] text-red-600 font-black uppercase hover:underline">Eliminar</button>
+                        <button class="btn-reply text-[8px] text-blue-500 font-black uppercase">Responder</button>
+                        <button class="btn-delete text-[8px] text-red-600 font-black uppercase">Eliminar</button>
                     </div>` : '';
-                const replyUI = data.adminReply ? `
-                    <div class="reply-box">
-                        <div class="flex items-center gap-2 mb-1">
-                            <div class="w-1 h-1 bg-red-600 rounded-full"></div>
-                            <span class="text-[7px] font-black uppercase text-red-600 block">Feedback VRZ</span>
-                        </div>
-                        <p class="text-[10px] text-gray-300 italic leading-relaxed">${data.adminReply}</p>
-                    </div>` : '';
+
                 div.innerHTML = `
-                    <div class="flex justify-between items-start">
+                    <div class="flex justify-between items-start mb-2">
                         <div class="flex flex-col">
                             <span class="text-red-500 font-black uppercase text-[10px] tracking-widest">${data.name || 'Anônimo'}</span>
                             <span class="text-[7px] text-gray-500 font-mono mt-0.5">${data.protocol || '---'}</span>
                         </div>
                         <span class="text-[7px] text-gray-600 font-bold uppercase">${data.sector || ''} ${data.prodLine ? '• ' + data.prodLine : ''}</span>
                     </div>
-                    <p class="text-gray-300 italic text-[11px] font-light leading-relaxed">"${data.text || ''}"</p>
-                    ${replyUI}
-                    ${adminTools}`;
+                    <p class="text-gray-300 italic text-[11px] leading-relaxed">"${data.text || ''}"</p>
+                    ${data.adminReply ? `<div class='reply-box'><span class='text-[7px] font-black uppercase text-red-600 block mb-1'>Resposta Administração</span><p class='text-[10px] italic'>${data.adminReply}</p></div>` : ''}
+                    ${adminTools}
+                `;
+
                 if(isAdmin) {
-                    div.querySelector('.btn-delete').onclick = () => showModal("Eliminar", "Deseja apagar?", async () => {
-                        await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'suggestions', data.id));
-                    });
+                    div.querySelector('.btn-delete').onclick = () => {
+                        showModal("Eliminar", "Deseja apagar esta proposta?", async () => {
+                            await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'suggestions', data.id));
+                        });
+                    };
                     div.querySelector('.btn-reply').onclick = () => {
-                        const r = prompt("Resposta:", data.adminReply || "");
+                        const r = prompt("Resposta VRZ:", data.adminReply || "");
                         if(r !== null) updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'suggestions', data.id), { adminReply: r });
                     };
                 }
@@ -645,52 +431,107 @@
             });
         };
 
-        // Lógica de Submissão do Formulário
+        const updateDashboard = () => {
+            const pending = allDocsCache.filter(d => !d.adminReply).length;
+            const solved = allDocsCache.filter(d => d.adminReply).length;
+            document.getElementById('countPending').innerText = pending;
+            document.getElementById('countAnswered').innerText = solved;
+
+            const ctx = document.getElementById('statsChart').getContext('2d');
+            if (statsChart) statsChart.destroy();
+            statsChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    datasets: [{ data: [pending, solved], backgroundColor: ['#dc2626', '#16a34a'], borderWidth: 0 }]
+                },
+                options: { cutout: '70%', plugins: { legend: { display: false } } }
+            });
+        };
+
         document.getElementById('feedbackForm').onsubmit = async (e) => {
             e.preventDefault();
-            if (!user || !db) {
-                showModal("Erro de Conexão", "O portal não está ligado ao servidor Firebase. Verifique se o Status no topo mostra algum erro.");
-                return;
-            }
+            if (!user) return alert("Erro de ligação.");
             
-            const protocol = generateProtocol();
-            const isAnon = document.getElementById('isAnonymous').checked;
             const btn = document.getElementById('submitBtn');
-            
+            const protocol = 'VRZ-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+            const isAnon = document.getElementById('isAnonymous').checked;
+
             const data = {
                 name: isAnon ? 'Anônimo' : document.getElementById('userName').value.trim(),
                 sector: isAnon ? 'Anônimo' : (document.getElementById('userSector').value.trim() || 'Não Informado'),
                 prodLine: isAnon ? 'Anônimo' : (document.getElementById('userProdLine').value.trim() || 'Geral'),
                 text: document.getElementById('userText').value.trim(),
                 protocol: protocol,
-                timestamp: serverTimestamp(),
-                attachmentName: document.getElementById('userFile').files[0]?.name || null
+                timestamp: serverTimestamp()
             };
 
-            btn.disabled = true;
-            btn.innerText = "SINCRO...";
-            
+            btn.disabled = true; btn.innerText = "A ENVIAR...";
             try {
                 await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'suggestions'), data);
+                showModal("Sucesso", `Ideia registada!<br>Código de acompanhamento:<br><span class='text-red-600 text-2xl font-black underline'>${protocol}</span>`);
                 document.getElementById('feedbackForm').reset();
-                removeSelectedFile();
-                
-                showModal("Proposta Registrada", `Anote seu protocolo de acompanhamento:<br><br><span class='text-red-600 text-2xl font-black underline tracking-widest block select-all'>${protocol}</span><br><p class='text-[10px] text-gray-500 italic'>Você precisará deste código para ver a resposta da administração.</p>`);
-                
-                btn.innerText = "SUCESSO!";
-                btn.classList.replace('bg-red-600', 'bg-green-600');
-                
-                setTimeout(() => { 
-                    btn.innerText = "Enviar Proposta"; 
-                    btn.disabled = false;
-                    btn.classList.replace('bg-green-600', 'bg-red-600');
-                }, 3000);
+                btn.innerText = "ENVIADO";
+                setTimeout(() => { btn.disabled = false; btn.innerText = "Enviar Proposta"; }, 3000);
             } catch (err) {
-                console.error("Submission Error:", err);
-                btn.innerText = "ERRO DE REDE";
+                alert(`Erro: ${err.message}`);
                 btn.disabled = false;
-                showModal("Erro no Envio", `Não foi possível enviar: ${err.message || 'Erro de permissão'}`);
+                btn.innerText = "Tentar Novamente";
             }
+        };
+
+        document.getElementById('isAnonymous').onchange = (e) => {
+            const isAnon = e.target.checked;
+            ['nameContainer', 'sectorContainer', 'prodLineContainer'].forEach(id => {
+                document.getElementById(id).classList.toggle('hidden', isAnon);
+            });
+            document.getElementById('userName').required = !isAnon;
+        };
+
+        document.getElementById('btnSearchProtocol').onclick = () => {
+            currentSearchProtocol = document.getElementById('protocolInput').value.trim().toUpperCase();
+            renderSuggestions();
+        };
+
+        window.loginAdmin = () => {
+            const u = prompt("Utilizador:");
+            const p = prompt("Senha:");
+            if ( (u === "Lucas.Sabino" && p === "Vrz2024") || (u === "Eduardo.Rocha" && p === "Helito@1313") ) {
+                isAdmin = true;
+                document.getElementById('adminIndicator').classList.remove('hidden');
+                document.getElementById('suggestionsHeader').classList.add('hidden');
+                document.getElementById('adminStats').classList.remove('hidden');
+                document.getElementById('protocolSearchContainer').classList.add('hidden');
+                renderSuggestions();
+                updateDashboard();
+            } else { alert("Acesso negado."); }
+        };
+
+        document.getElementById('btnExportPDF').onclick = () => {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF();
+            pdf.text("Relatório Fábrica de Ideias VRZ", 14, 20);
+            const body = allDocsCache.map(d => [d.protocol, d.name, d.text.substring(0, 50) + "...", d.adminReply ? "Respondido" : "Pendente"]);
+            pdf.autoTable({ head: [['Protocolo', 'Autor', 'Ideia', 'Status']], body: body, startY: 30 });
+            pdf.save("relatorio_vrz.pdf");
+        };
+
+        window.showPage = (id) => {
+            document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            document.getElementById(`page-${id}`)?.classList.add('active');
+            document.getElementById(`nav-${id}`)?.classList.add('active');
+        };
+        
+        window.handleFileSelect = (input) => {
+            const display = document.getElementById('fileNameDisplay');
+            if (input.files && input.files[0]) display.innerText = input.files[0].name;
+        };
+        
+        window.removeSelectedFile = () => {
+            const input = document.getElementById('userFile');
+            if (input) input.value = "";
+            const display = document.getElementById('fileNameDisplay');
+            if (display) display.innerText = "Selecionar Arquivo";
         };
     </script>
 </body>
