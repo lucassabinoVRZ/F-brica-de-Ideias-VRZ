@@ -48,9 +48,9 @@
     <div id="custom-modal">
         <div class="modal-content shadow-2xl shadow-red-600/10 text-left">
             <h3 id="modal-title" class="text-xl font-black italic uppercase text-red-600 mb-4 text-center">Aviso</h3>
-            <div id="modal-text" class="text-sm text-gray-400 mb-6 italic leading-relaxed"></div>
+            <div id="modal-text" class="text-sm text-gray-400 mb-6 italic leading-relaxed text-center"></div>
             <div id="modal-actions" class="flex gap-4 justify-center">
-                <button id="modal-close" class="bg-gray-800 px-6 py-2 rounded-lg text-xs font-bold uppercase hover:bg-gray-700 transition-all">Fechar</button>
+                <!-- O botão será gerado dinamicamente via JS -->
             </div>
         </div>
     </div>
@@ -114,7 +114,7 @@
                 <div class="md:col-span-3 space-y-4">
                     <div class="flex flex-col gap-4">
                         <div class="flex items-center justify-between px-2">
-                            <button onclick="loginAdminModal()" id="suggestionsHeader" class="text-sm font-bold uppercase italic text-gray-500 admin-btn">Área Restrita</button>
+                            <button onclick="loginAdminModal()" id="suggestionsHeader" class="text-sm font-bold uppercase italic text-gray-500 admin-btn hover:text-red-600">Área Restrita</button>
                             <div id="adminIndicator" class="hidden flex items-center gap-4">
                                 <span class="text-[8px] font-black text-red-600 uppercase tracking-widest animate-pulse">Painel VRZ Ativo</span>
                                 <button onclick="location.reload()" class="text-[8px] font-black text-white bg-red-600/20 hover:bg-red-600 px-2 py-1 rounded transition-all uppercase border border-red-600/30">Sair</button>
@@ -141,7 +141,7 @@
                         </div>
 
                         <div id="suggestionsList" class="space-y-6 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
-                            <div class="text-center py-20 opacity-30 italic flex flex-col items-center gap-4 text-xs uppercase font-bold tracking-widest">
+                            <div class="text-center py-20 opacity-30 italic flex flex-col items-center gap-4 text-xs uppercase font-bold tracking-widest text-gray-500">
                                 Insira um protocolo para pesquisar sua ideia.
                             </div>
                         </div>
@@ -150,14 +150,13 @@
             </div>
         </section>
 
-        <!-- PÁGINA: SOMOS VRZ (DESIGN COMPLETO RESTAURADO) -->
+        <!-- PÁGINA: SOMOS VRZ -->
         <section id="page-about" class="page-content space-y-12">
             <div class="text-center space-y-4">
                 <h1 class="text-4xl md:text-7xl font-black italic uppercase leading-none text-white">Somos <span class="text-red-600">VRZ</span></h1>
                 <p class="text-gray-500 uppercase tracking-[0.4em] font-bold text-[10px]">Excelência em Blindagem Automotiva Premium</p>
             </div>
 
-            <!-- CARDS DE MISSÃO/VISÃO/VALORES -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="glass p-8 rounded-3xl border-t border-red-600/30">
                     <div class="icon-box">
@@ -178,7 +177,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                     </div>
                     <h3 class="text-lg font-black uppercase italic mb-3 text-white">Valores</h3>
-                    <div class="space-y-2 text-[10px] text-gray-400 italic uppercase font-bold tracking-tighter">
+                    <div class="space-y-2 text-[10px] text-gray-400 italic uppercase font-bold tracking-tighter text-left">
                         <p><span class="text-red-600">ÉTICA:</span> Transparência total em cada processo.</p>
                         <p><span class="text-red-600">PESSOAS:</span> Valorização máxima do nosso capital humano.</p>
                         <p><span class="text-red-600">QUALIDADE:</span> Rigor técnico em cada centímetro blindado.</p>
@@ -186,7 +185,7 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 text-left">
                 <div class="space-y-6">
                     <div class="glass p-8 rounded-[2.5rem] border border-white/5">
                         <h2 class="text-2xl font-black uppercase italic text-red-600 mb-4">Nossa História</h2>
@@ -223,7 +222,7 @@
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
 
-        // CHAVES OFICIAIS PORTAL VRZ
+        // CHAVES OFICIAIS PORTAL VRZ (Confirmadas por image_483387.png)
         const firebaseConfig = {
             apiKey: "AIzaSyDSvjmRtKMnipJUdwF6gdFhSoGo2gBBJJc",
             authDomain: "portal-vrz.firebaseapp.com",
@@ -237,6 +236,30 @@
         const appId = "portal-vrz";
         let auth, db, user = null, isAdmin = false, currentSearchProtocol = "", statsChart = null, allDocsCache = [];
 
+        const showModal = (title, text, confirmCallback = null) => {
+            const modal = document.getElementById('custom-modal');
+            const actions = document.getElementById('modal-actions');
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-text').innerHTML = text;
+            actions.innerHTML = '';
+
+            const closeBtn = document.createElement('button');
+            closeBtn.className = "bg-gray-800 px-6 py-2 rounded-lg text-xs font-bold uppercase hover:bg-gray-700 transition-all";
+            closeBtn.innerText = "Fechar";
+            closeBtn.onclick = () => { modal.style.display = 'none'; };
+            actions.appendChild(closeBtn);
+
+            if (confirmCallback) {
+                closeBtn.innerText = "Cancelar";
+                const confirmBtn = document.createElement('button');
+                confirmBtn.className = "bg-red-600 px-6 py-2 rounded-lg text-xs font-bold uppercase hover:bg-red-700 transition-all";
+                confirmBtn.innerText = "Confirmar";
+                confirmBtn.onclick = () => { confirmCallback(); modal.style.display = 'none'; };
+                actions.appendChild(confirmBtn);
+            }
+            modal.style.display = 'flex';
+        };
+
         const updateStatusUI = (text, isError = false) => {
             const statusEl = document.getElementById('userIdDisplay');
             if (statusEl) {
@@ -247,7 +270,6 @@
 
         const init = async () => {
             try {
-                // FIX: Removemos qualquer tentativa de usar config do ambiente para evitar erro de API Key inválida no Preview
                 const app = initializeApp(firebaseConfig);
                 auth = getAuth(app);
                 db = getFirestore(app);
@@ -262,7 +284,7 @@
                             await signInAnonymously(auth);
                         } catch (e) {
                             let domain = window.location.hostname;
-                            // Se o erro for de domínio, avisamos. Se for de API Key, o usuário deve conferir no Console do Firebase.
+                            // Diagnóstico de erro direto no status
                             if(e.code === "auth/unauthorized-domain") {
                                 updateStatusUI(`ERRO: ADICIONE "${domain}" NO FIREBASE AUTH`, true);
                             } else {
@@ -300,7 +322,7 @@
             let docsToShow = allDocsCache.filter(data => isAdmin || (currentSearchProtocol && data.protocol === currentSearchProtocol));
             
             if(docsToShow.length === 0) {
-                list.innerHTML = `<div class="text-center py-20 opacity-20 italic text-xs font-bold tracking-widest">${currentSearchProtocol ? 'Protocolo não encontrado.' : 'Aguardando protocolo...'}</div>`;
+                list.innerHTML = `<div class="text-center py-20 opacity-20 italic text-xs font-bold tracking-widest text-gray-500">${currentSearchProtocol ? 'Protocolo não encontrado.' : 'Aguardando protocolo...'}</div>`;
                 return;
             }
 
@@ -316,41 +338,52 @@
                         <span class="text-[7px] text-gray-600 font-bold uppercase">${data.sector || ''} ${data.prodLine ? '• ' + data.prodLine : ''}</span>
                     </div>
                     <p class="text-gray-300 italic text-[11px] leading-relaxed">"${data.text || ''}"</p>
-                    ${data.adminReply ? `<div class='reply-box'><span class='text-[7px] font-black text-red-600 uppercase block mb-1'>Resposta VRZ</span><p class='text-[10px] text-gray-300'>${data.adminReply}</p></div>` : ''}
+                    ${data.adminReply ? `<div class='reply-box text-left'><span class='text-[7px] font-black text-red-600 uppercase block mb-1'>Resposta VRZ</span><p class='text-[10px] text-gray-300'>${data.adminReply}</p></div>` : ''}
                 `;
                 list.appendChild(div);
             });
         };
 
+        // LÓGICA DO BOTÃO ANÓNIMO
+        document.getElementById('isAnonymous').onchange = (e) => {
+            const isAnon = e.target.checked;
+            const ids = ['nameContainer', 'sectorContainer', 'prodLineContainer'];
+            ids.forEach(id => {
+                const el = document.getElementById(id);
+                if(isAnon) {
+                    el.style.display = 'none';
+                } else {
+                    el.style.display = 'block';
+                }
+            });
+            document.getElementById('userName').required = !isAnon;
+        };
+
         document.getElementById('feedbackForm').onsubmit = async (e) => {
             e.preventDefault();
+            if (!auth.currentUser) { updateStatusUI("RECONECTANDO...", true); await signInAnonymously(auth); }
             const btn = document.getElementById('submitBtn');
             const protocol = 'VRZ-' + Math.random().toString(36).substring(2, 8).toUpperCase();
             const data = {
                 name: document.getElementById('isAnonymous').checked ? 'Anónimo' : document.getElementById('userName').value,
                 sector: document.getElementById('isAnonymous').checked ? 'Anónimo' : (document.getElementById('userSector').value || 'Geral'),
+                prodLine: document.getElementById('isAnonymous').checked ? 'Anónimo' : (document.getElementById('userProdLine').value || 'Geral'),
                 text: document.getElementById('userText').value,
-                protocol, timestamp: serverTimestamp()
+                protocol, 
+                timestamp: serverTimestamp()
             };
 
             btn.disabled = true; btn.innerText = "A ENVIAR...";
             try {
                 await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'suggestions'), data);
-                showModal("Sucesso", `Ideia registada!<br>Protocolo: <span class='text-red-600 font-black'>${protocol}</span>`);
+                showModal("Sucesso", `Ideia registada!<br><br>Protocolo:<br><span class='text-red-600 text-2xl font-black'>${protocol}</span>`);
                 document.getElementById('feedbackForm').reset();
                 btn.innerText = "ENVIADO";
                 setTimeout(() => { btn.disabled = false; btn.innerText = "Enviar Proposta"; }, 3000);
             } catch (err) {
-                alert(`Erro de ligação. Verifique se o banco de dados está online.`);
+                showModal("Erro", `Falha no envio: ${err.message}`);
                 btn.disabled = false;
             }
-        };
-
-        const showModal = (title, text, confirmCallback = null) => {
-            const modal = document.getElementById('custom-modal');
-            document.getElementById('modal-title').innerText = title;
-            document.getElementById('modal-text').innerHTML = text;
-            modal.style.display = 'flex';
         };
 
         window.showPage = (id) => {
